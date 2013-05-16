@@ -10,7 +10,7 @@ version := "0.1.0"
 
 description := "sbt plugin to create a unified API document across projects"
 
-licenses := Seq("MIT License" -> url("http://www.apache.org/licenses/LICENSE-2.0.html"))
+licenses := Seq("Apache License v2" -> url("http://www.apache.org/licenses/LICENSE-2.0.html"))
 
 scalacOptions := Seq("-deprecation", "-unchecked")
 
