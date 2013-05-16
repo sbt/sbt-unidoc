@@ -1,0 +1,7 @@
+This is the initial release of [sbt-unidoc](https://github.com/sbt/sbt-unidoc).
+
+The original implementation of `unidoc` command was written by [@pvlugter](https://github.com/pvlugter) for Akka's build definition. [@eed3si9n](https://github.com/eed3si9n) turned it into a plugin, and refactored it some more.
+
+The basic use case of sbt-unidoc is to unify Scaladoc generation across all projects in a build. This is useful for builds that modularizes its parts into subprojects like Akka. After setting it up, you just run `unidoc` task from the root project.
+
+Another interesting use case is to unify Javadoc generation, except plain Javadoc won't know your Scala code. So they wrote [a compiler plugin](https://github.com/typesafehub/genjavadoc) that generates Scala-equivalent Java code, so you can generate Javadoc. See [sbt-unidoc](https://github.com/sbt/sbt-unidoc) for the details.
