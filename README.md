@@ -9,7 +9,7 @@ how to add this plugin
 Add the following to your `project/plugins.sbt`:
 
 ```scala
-addSbtPlugin("com.eed3si9n" % "sbt-unidoc" % "0.1.0")
+addSbtPlugin("com.eed3si9n" % "sbt-unidoc" % "0.1.1")
 ```
 
 how to unify scaladoc
@@ -17,6 +17,8 @@ how to unify scaladoc
 
 1. Import `sbtunidoc.Plugin._`.
 2. Add `unidocSettings` to your root project's settings.
+
+If one of your subprojects is defining def macros, add `scalacOptions in (unidoc, ScalaUnidoc) += "-Ymacro-no-expand"` to the root project's setting to temporary halt the macro expansion.
 
 Here's an example:
 

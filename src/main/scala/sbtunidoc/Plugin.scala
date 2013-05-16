@@ -21,12 +21,19 @@ object Plugin extends sbt.Plugin {
     doc <<= (cacheDirectory in unidoc, compileInputs in unidoc, target in unidoc, configuration, streams) map { (cache, in, out, config, s) =>
       Unidoc(cache, in, out, config, s.log)
     },
-    compileInputs in unidoc <<= (compileInputs in (Compile, doc), sources in unidoc, fullClasspath in unidoc) map { (in, srcs, cp0) =>
+    compileInputs in unidoc <<= (compileInputs in (Compile, doc), sources in unidoc, fullClasspath in unidoc,
+        scalacOptions in unidoc, javacOptions in unidoc) map { (in, srcs, cp0, options, javacOptions) =>
       val cp = cp0 map {_.data}
-      in.copy(config = in.config.copy(classpath = cp, sources = srcs))
+      in.copy(config = in.config.copy(
+        classpath = cp,
+        sources = srcs,
+        options = options,
+        javacOptions = javacOptions))
     },
     cacheDirectory in unidoc <<= cacheDirectory / "unidoc",
     sources in unidoc <<= (allSources in unidoc) map { _.flatten },
+    scalacOptions in unidoc <<= scalacOptions in (Compile, doc),
+    javacOptions in unidoc <<= javacOptions in (Compile, doc),
     fullClasspath in unidoc <<= (allClasspaths in unidoc) map { _.flatten.distinct },
     allClasspaths in unidoc <<= (thisProjectRef, buildStructure, excludedProjects in unidoc) flatMap Unidoc.allClasspathsTask,
     excludedProjects in unidoc := Seq()
