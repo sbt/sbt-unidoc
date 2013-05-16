@@ -49,7 +49,7 @@ object Builds extends Build {
 
 From the root project, run `unidoc` task:
 
-```scala
+```
 foo> unidoc
 ...
 [info] Generating Scala API documentation for main sources to /unidoc-sample/target/scala-2.10/unidoc...
@@ -114,7 +114,7 @@ object Builds extends Build {
 
 First `clean` then `compile` all projects (in the above, root aggreates both children), then run `unidoc` task from the root project:
 
-```scala
+```
 foo> clean
 [success] Total time: 0 s, completed May 16, 2013 1:13:55 AM
 foo> compile
