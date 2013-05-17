@@ -46,7 +46,7 @@ object Plugin extends sbt.Plugin {
     target in unidoc <<= target / "javaunidoc",
     allSources in unidoc <<= (thisProjectRef, buildStructure, excludedProjects in unidoc) flatMap Unidoc.allJavaSourcesTask
   )
-  lazy val baseGenjavadocExtraSettings: Seq[sbt.Project.Setting[_]] = Defaults.configSettings ++ Seq(
+  lazy val baseGenjavadocExtraSettings: Seq[sbt.Project.Setting[_]] = Seq(
     artifactName in packageDoc := { (sv, mod, art) => "" + mod.name + "_" + sv.binary + "-" + mod.revision + "-javadoc.jar" },
     sources <<= (target, sources in Compile) map { (t, s) =>
       (t / "java" ** "*.java").get ++ s.filter(_.getName.endsWith(".java"))
@@ -60,23 +60,23 @@ object Plugin extends sbt.Plugin {
   /** Add this to child projects to replace packaged javadoc with the genjavadoc. */
   lazy val genjavadocExtraSettings: Seq[sbt.Project.Setting[_]] =
     genjavadocSettings ++
-    inConfig(Genjavadoc)(baseGenjavadocExtraSettings) ++ Seq(
+    inConfig(Genjavadoc)(Defaults.configSettings ++ baseGenjavadocExtraSettings) ++ Seq(
       packageDoc in Compile <<= packageDoc in Genjavadoc
     )
   /** Add this to the root project to generate Java unidoc. */
   lazy val javaUnidocSettings: Seq[sbt.Project.Setting[_]] =
-    inConfig(JavaUnidoc)(baseJavaUnidocSettings) ++ Seq(
+    inConfig(JavaUnidoc)(Defaults.configSettings ++ baseJavaUnidocSettings) ++ Seq(
       unidoc <<= (doc in JavaUnidoc) map {Seq(_)})
   /** Add this to the root project to generate Scala unidoc. */
   lazy val scalaUnidocSettings: Seq[sbt.Project.Setting[_]] =
-    inConfig(ScalaUnidoc)(baseScalaUnidocSettings) ++ Seq(
+    inConfig(ScalaUnidoc)(Defaults.configSettings ++ baseScalaUnidocSettings) ++ Seq(
       unidoc <<= (doc in ScalaUnidoc) map {Seq(_)})
   /** An alias for scalaUnidocSettings */
   lazy val unidocSettings: Seq[sbt.Project.Setting[_]] = scalaUnidocSettings
   /** Add this to the root project to generate both Scala unidoc and Java unidoc. */
   lazy val scalaJavaUnidocSettings: Seq[sbt.Project.Setting[_]] =
-    inConfig(ScalaUnidoc)(baseScalaUnidocSettings) ++ 
-    inConfig(JavaUnidoc)(baseJavaUnidocSettings) ++ Seq(
+    inConfig(ScalaUnidoc)(Defaults.configSettings ++ baseScalaUnidocSettings) ++ 
+    inConfig(JavaUnidoc)(Defaults.configSettings ++ baseJavaUnidocSettings) ++ Seq(
       unidoc <<= (doc in ScalaUnidoc, doc in JavaUnidoc) map { (s, j) => Seq(s, j) })
 
   object Unidoc {
