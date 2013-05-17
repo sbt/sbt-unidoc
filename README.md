@@ -89,8 +89,8 @@ addSbtPlugin("com.typesafe.sbt" % "sbt-site" % "0.6.2")
 addSbtPlugin("com.typesafe.sbt" % "sbt-ghpages" % "0.5.0")
 ```
 
-1. Import bunch of things:
-   
+Then in `project/build.scala` import bunch of things,
+
 ```scala
 import com.typesafe.sbt.SbtGhPages._
 import com.typesafe.sbt.SbtGit.{GitKeys => git}
@@ -98,8 +98,7 @@ import com.typesafe.sbt.SbtSite._
 import sbtunidoc.Plugin._
 ```
 
-2. Add `site.settings` and `ghpages.settings` to the root project's settings.
-3. Add `mappings in packageDoc in ScalaUnidoc` to the site's mapping.
+add `site.settings` and `ghpages.settings` to the root project's settings, and then add `mappings in packageDoc in ScalaUnidoc` to the site's mapping:
 
 ```scala
   lazy val rootSettings = buildSettings ++ unidocSettings ++ 
@@ -108,6 +107,13 @@ import sbtunidoc.Plugin._
     git.gitRemoteRepo := "git@github.com:user/foo.git",
     site.addMappingsToSiteDir(mappings in packageDoc in ScalaUnidoc, "latest/api")
   )
+```
+
+Here's how to preview and publish it:
+
+```
+foo> preview-site
+foo> ghpages-push-site
 ```
 
 how to unify javadoc
