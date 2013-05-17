@@ -76,6 +76,38 @@ how to exclude a project
 
 This will skip Scaladoc for the app project.
 
+how to publish Scala unidoc to Github Pages
+-------------------------------------------
+
+Add sbt-site and sbt-ghpages to your `project/plugins.sbt`:
+
+```scala
+resolvers += "jgit-repo" at "http://download.eclipse.org/jgit/maven"
+
+addSbtPlugin("com.typesafe.sbt" % "sbt-site" % "0.6.2")
+
+addSbtPlugin("com.typesafe.sbt" % "sbt-ghpages" % "0.5.0")
+```
+
+1. Import bunch of things:
+   ```scala
+   import com.typesafe.sbt.SbtGhPages._
+   import com.typesafe.sbt.SbtGit.{GitKeys => git}
+   import com.typesafe.sbt.SbtSite._
+   import sbtunidoc.Plugin._
+   ```
+2. Add `site.settings` and `ghpages.settings` to the root project's settings.
+3. Add `mappings in packageDoc in ScalaUnidoc` to the site's mapping.
+
+```scala
+  lazy val rootSettings = buildSettings ++ unidocSettings ++ 
+      site.settings ++ ghpages.settings ++ Seq(
+    name := "foo",
+    git.gitRemoteRepo := "git@github.com:user/foo.git",
+    site.addMappingsToSiteDir(mappings in packageDoc in ScalaUnidoc, "latest/api")
+  )
+```
+
 how to unify javadoc
 --------------------
 
