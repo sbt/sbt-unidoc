@@ -43,3 +43,7 @@ credentials += Credentials(Path.userHome / ".ivy2" / ".sbtcredentials")
 lsSettings
 
 LsKeys.tags in LsKeys.lsync := Seq("sbt", "doc")
+
+sbtVersion in Global := "0.13.0-Beta2" 
+
+scalaVersion in Global := "2.10.2-RC2" 
