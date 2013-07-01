@@ -6,6 +6,10 @@ organization := "com.eed3si9n"
 
 version := "0.1.2"
 
+sbtVersion in Global := "0.13.0-RC1" 
+
+scalaVersion in Global := "2.10.2" 
+
 // CrossBuilding.crossSbtVersions := Seq("0.11.3", "0.11.2" ,"0.12")
 
 description := "sbt plugin to create a unified API document across projects"
@@ -43,7 +47,3 @@ credentials += Credentials(Path.userHome / ".ivy2" / ".sbtcredentials")
 lsSettings
 
 LsKeys.tags in LsKeys.lsync := Seq("sbt", "doc")
-
-sbtVersion in Global := "0.13.0-Beta2" 
-
-scalaVersion in Global := "2.10.2-RC2" 
