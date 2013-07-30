@@ -4,7 +4,7 @@ name := "sbt-unidoc"
 
 organization := "com.eed3si9n"
 
-version := "0.2.0-SNAPSHOT"
+version := "0.2.0"
 
 sbtVersion in Global := "0.13.0-RC1" 
 
