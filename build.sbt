@@ -4,7 +4,7 @@ name := "sbt-unidoc"
 
 organization := "com.eed3si9n"
 
-version := "0.1.2"
+version := "0.2.0-SNAPSHOT"
 
 sbtVersion in Global := "0.13.0-RC1" 
 
@@ -44,6 +44,6 @@ publishTo <<= (version) { version: String =>
 
 credentials += Credentials(Path.userHome / ".ivy2" / ".sbtcredentials")
 
-lsSettings
+// lsSettings
 
-LsKeys.tags in LsKeys.lsync := Seq("sbt", "doc")
+// LsKeys.tags in LsKeys.lsync := Seq("sbt", "doc")
