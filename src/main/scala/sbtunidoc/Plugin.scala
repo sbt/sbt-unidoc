@@ -6,71 +6,103 @@ import Keys._
 object Plugin extends sbt.Plugin {
   lazy val JavaUnidoc = config("javaunidoc") extend Compile
   lazy val ScalaUnidoc = config("scalaunidoc") extend Compile
+  lazy val TestJavaUnidoc = config("testjavaunidoc") extend Test
+  lazy val TestScalaUnidoc = config("testscalaunidoc") extend Test
   lazy val Genjavadoc = config("genjavadoc") extend Compile
 
   import UnidocKeys._
 
   object UnidocKeys {
-    val unidoc           = TaskKey[Seq[File]]("unidoc", "Create unified scaladoc for all aggregates")
-    val excludedProjects = SettingKey[Seq[String]]("unidoc-excluded-projects")
-    val allSources       = TaskKey[Seq[Seq[File]]]("unidoc-all-sources")
-    val allClasspaths    = TaskKey[Seq[Classpath]]("unidoc-all-classpaths")
+    val unidoc                    = taskKey[Seq[File]]("Create unified scaladoc for all aggregates.")
+    val unidocAllSources          = taskKey[Seq[Seq[File]]]("All sources.")
+    val unidocAllClasspaths       = taskKey[Seq[Classpath]]("All classpaths.")
+    val unidocScopeFilter         = settingKey[ScopeFilter]("Control sources to be included in unidoc.")
+    val unidocProjectFilter       = settingKey[ScopeFilter.ProjectFilter]("Control projects to be included in unidoc.")
+    val unidocConfigurationFilter = settingKey[ScopeFilter.ConfigurationFilter]("Control configurations to be included in unidoc.")
   }
   
-  lazy val baseCommonUnidocSettings: Seq[sbt.Def.Setting[_]] = Seq(
+  def baseCommonUnidocTasks(sc: Configuration): Seq[sbt.Def.Setting[_]] = Seq(
     doc := Unidoc(streams.value.cacheDirectory, (compilers in unidoc).value, (sources in unidoc).value, (fullClasspath in unidoc).value,
       (scalacOptions in unidoc).value, (javacOptions in unidoc).value, (apiMappings in unidoc).value, (maxErrors in unidoc).value,
       (target in unidoc).value, configuration.value, streams.value),
-    compilers in unidoc := (compilers in Compile).value,
-    sources in unidoc <<= (allSources in unidoc) map { _.flatten },
-    scalacOptions in unidoc := (scalacOptions in (Compile, doc)).value,
-    javacOptions in unidoc := (javacOptions in (Compile, doc)).value,
-    fullClasspath in unidoc <<= (allClasspaths in unidoc) map { _.flatten.distinct },
-    allClasspaths in unidoc <<= (thisProjectRef, buildStructure, excludedProjects in unidoc) flatMap Unidoc.allClasspathsTask,
-    excludedProjects in unidoc := Seq(),
-    apiMappings in unidoc := (apiMappings in Compile).value,
-    maxErrors in unidoc := (maxErrors in (Compile, doc)).value
+    compilers in unidoc := (compilers in sc).value,
+    sources in unidoc := (unidocAllSources in unidoc).value.flatten,
+    scalacOptions in unidoc := (scalacOptions in (sc, doc)).value,
+    javacOptions in unidoc := (javacOptions in (sc, doc)).value,
+    fullClasspath in unidoc := (unidocAllClasspaths in unidoc).value.flatten.distinct,
+    unidocAllClasspaths in unidoc := Unidoc.allClasspathsTask.value,
+    apiMappings in unidoc := (apiMappings in sc).value,
+    maxErrors in unidoc := (maxErrors in (sc, doc)).value,
+    unidocScopeFilter in unidoc := ScopeFilter((unidocProjectFilter in unidoc).value, (unidocConfigurationFilter in unidoc).value),
+    unidocProjectFilter in unidoc := inAnyProject,
+    // {
+    //   val exclude = excludedProjects.value
+    //   inAnyProject -- inProjects(buildStructure.value.allProjectRefs filter { p => exclude contains (p.project) }: _*)
+    // },
+    // excludedProjects in unidoc := Seq(),
+    unidocConfigurationFilter in unidoc := inConfigurations(sc)
   )
-  lazy val baseScalaUnidocSettings: Seq[sbt.Def.Setting[_]] = baseCommonUnidocSettings ++ Seq(
+  def baseScalaUnidocTasks(sc: Configuration): Seq[sbt.Def.Setting[_]] = baseCommonUnidocTasks(sc) ++ Seq(
     target in unidoc := crossTarget.value / "unidoc",
-    allSources in unidoc <<= (thisProjectRef, buildStructure, excludedProjects in unidoc) flatMap Unidoc.allScalaSourcesTask
+    unidocAllSources in unidoc := Unidoc.allScalaSources.value
   )
-  lazy val baseJavaUnidocSettings: Seq[sbt.Def.Setting[_]] = baseCommonUnidocSettings ++ Seq(
+  def baseJavaUnidocTasks(sc: Configuration): Seq[sbt.Def.Setting[_]] = baseCommonUnidocTasks(sc) ++ Seq(
     target in unidoc := target.value / "javaunidoc",
-    allSources in unidoc <<= (thisProjectRef, buildStructure, excludedProjects in unidoc) flatMap Unidoc.allJavaSourcesTask
+    unidocAllSources in unidoc := Unidoc.allJavaSourcesTask.value
   )
-  lazy val baseGenjavadocExtraSettings: Seq[sbt.Def.Setting[_]] = Seq(
+  def baseGenjavadocExtraTasks(sc: Configuration): Seq[sbt.Def.Setting[_]] = Seq(
     artifactName in packageDoc := { (sv, mod, art) => "" + mod.name + "_" + sv.binary + "-" + mod.revision + "-javadoc.jar" },
-    sources <<= (target, sources in Compile) map { (t, s) =>
+    sources <<= (target, sources in sc) map { (t, s) =>
       (t / "java" ** "*.java").get ++ s.filter(_.getName.endsWith(".java"))
     },
-    javacOptions in doc := (javacOptions in (Compile, doc)).value
+    javacOptions in doc := (javacOptions in (sc, doc)).value
   )  
   /** Add this to child projects to generate equivalent java files out of scala files. */
   lazy val genjavadocSettings: Seq[sbt.Def.Setting[_]] = Seq(
     libraryDependencies += compilerPlugin("com.typesafe.genjavadoc" %% "genjavadoc-plugin" % "0.5" cross CrossVersion.full),
     scalacOptions <+= target map (t => "-P:genjavadoc:out=" + (t / "java")))
   /** Add this to child projects to replace packaged javadoc with the genjavadoc. */
-  lazy val genjavadocExtraSettings: Seq[sbt.Def.Setting[_]] =
+  lazy val genjavadocExtraSettings: Seq[sbt.Def.Setting[_]] = genjavadocExtraTask(Genjavadoc, Compile)
+  def genjavadocExtraTask(c: Configuration, sc: Configuration): Seq[sbt.Def.Setting[_]] =
     genjavadocSettings ++
-    inConfig(Genjavadoc)(Defaults.configSettings ++ baseGenjavadocExtraSettings) ++ Seq(
-      packageDoc in Compile <<= packageDoc in Genjavadoc
+    inConfig(c)(Defaults.configSettings ++ baseGenjavadocExtraTasks(sc)) ++ Seq(
+      packageDoc in sc <<= packageDoc in c
     )
+
   /** Add this to the root project to generate Java unidoc. */
   lazy val javaUnidocSettings: Seq[sbt.Def.Setting[_]] =
-    inConfig(JavaUnidoc)(Defaults.configSettings ++ baseJavaUnidocSettings) ++ Seq(
-      unidoc <<= (doc in JavaUnidoc) map {Seq(_)})
+    javaUnidocTask(JavaUnidoc, Compile) ++
+    javaUnidocTask(TestJavaUnidoc, Test) ++
+    inConfig(TestJavaUnidoc)(Seq(
+      target in unidoc := target.value / "testjavaunidoc"
+    ))
+  def javaUnidocTask(c: Configuration, sc: Configuration): Seq[sbt.Def.Setting[_]] =
+    inConfig(c)(Defaults.configSettings ++ baseJavaUnidocTasks(sc)) ++ Seq(
+      unidoc in sc := Seq((doc in c).value)
+    )
+  
   /** Add this to the root project to generate Scala unidoc. */
   lazy val scalaUnidocSettings: Seq[sbt.Def.Setting[_]] =
-    inConfig(ScalaUnidoc)(Defaults.configSettings ++ baseScalaUnidocSettings) ++ Seq(
-      unidoc <<= (doc in ScalaUnidoc) map {Seq(_)})
+    scalaUnidocTask(ScalaUnidoc, Compile) ++
+    scalaUnidocTask(TestScalaUnidoc, Test) ++
+    inConfig(TestScalaUnidoc)(Seq(
+      target in unidoc := crossTarget.value / "testunidoc"
+    ))
+  def scalaUnidocTask(c: Configuration, sc: Configuration): Seq[sbt.Def.Setting[_]] =
+    inConfig(c)(Defaults.configSettings ++ baseScalaUnidocTasks(sc)) ++ Seq(
+      unidoc in sc := Seq((doc in c).value)
+    )
+
   /** An alias for scalaUnidocSettings */
   lazy val unidocSettings: Seq[sbt.Def.Setting[_]] = scalaUnidocSettings
   /** Add this to the root project to generate both Scala unidoc and Java unidoc. */
   lazy val scalaJavaUnidocSettings: Seq[sbt.Def.Setting[_]] =
-    inConfig(ScalaUnidoc)(Defaults.configSettings ++ baseScalaUnidocSettings) ++ 
-    inConfig(JavaUnidoc)(Defaults.configSettings ++ baseJavaUnidocSettings) ++ Seq(
-      unidoc <<= (doc in ScalaUnidoc, doc in JavaUnidoc) map { (s, j) => Seq(s, j) })
+    scalaJavaUnidocTask(ScalaUnidoc, JavaUnidoc, Compile) ++
+    scalaJavaUnidocTask(TestScalaUnidoc, TestJavaUnidoc, Test)
+  def scalaJavaUnidocTask(c1: Configuration, c2: Configuration, sc: Configuration): Seq[sbt.Def.Setting[_]] =
+    inConfig(c1)(Defaults.configSettings ++ baseScalaUnidocTasks(sc)) ++ 
+    inConfig(c2)(Defaults.configSettings ++ baseJavaUnidocTasks(sc)) ++ Seq(
+      unidoc in sc <<= (doc in c1, doc in c2) map { (s, j) => Seq(s, j) })
 
   object Unidoc {
     import java.io.PrintWriter
@@ -102,35 +134,22 @@ object Plugin extends sbt.Plugin {
       case "compile"|"javaunidoc"|"scalaunidoc" => "main"
       case _ => name
     }
-    def allScalaSourcesTask(projectRef: ProjectRef, structure: BuildStructure, exclude: Seq[String]): Task[Seq[Seq[File]]] = {
-      val projects = aggregated(projectRef, structure, exclude)
-      projects flatMap { sources in Compile in LocalProject(_) get structure.data } join
+    lazy val allScalaSources = Def.taskDyn {
+      val f = (unidocScopeFilter in unidoc).value
+      sources.all(f)
     }
-    def allJavaSourcesTask(projectRef: ProjectRef, structure: BuildStructure, exclude: Seq[String]): Task[Seq[Seq[File]]] = {
-      val projects = aggregated(projectRef, structure, exclude)
-      val javaSources = projects flatMap { p =>
-        val taskOption: Option[Task[Seq[File]]] = sources in Compile in LocalProject(p) get structure.data
-        val targetOption: Option[File] = target in Compile in LocalProject(p) get structure.data
-        val targetJavaFiles: Seq[File] = targetOption map { t =>
-          (t / "java" ** "*.java").get.sorted
-        } getOrElse Nil
-        taskOption map { _  map { seq =>
-          val sourceJavaFiles: Seq[File] = seq filter (_.getName endsWith ".java")
-          sourceJavaFiles ++ targetJavaFiles
-        }}
-      }
-      javaSources.join
+    lazy val javaSources: sbt.Def.Initialize[Task[Seq[File]]] = Def.task {
+      val sourceJavaFiles = sources.value filter {_.getName endsWith ".java"}
+      val targetJavaFiles: Seq[File] = (target.value / "java" ** "*.java").get.sorted
+      sourceJavaFiles ++ targetJavaFiles
     }
-    def allClasspathsTask(projectRef: ProjectRef, structure: BuildStructure, exclude: Seq[String]): Task[Seq[Classpath]] = {
-      val projects = aggregated(projectRef, structure, exclude)
-      projects flatMap { dependencyClasspath in Compile in LocalProject(_) get structure.data } join
+    lazy val allJavaSourcesTask = Def.taskDyn {
+      val f = (unidocScopeFilter in unidoc).value
+      javaSources.all(f)
     }
-    def aggregated(projectRef: ProjectRef, structure: BuildStructure, exclude: Seq[String]): Seq[String] = {
-      val aggregate = Project.getProject(projectRef, structure).toSeq.flatMap(_.aggregate)
-      aggregate flatMap { ref =>
-        if (exclude contains ref.project) Seq.empty
-        else ref.project +: aggregated(ref, structure, exclude)
-      }
-    }    
+    lazy val allClasspathsTask = Def.taskDyn {
+      val f = (unidocScopeFilter in unidoc).value
+      dependencyClasspath.all(f)
+    }   
   }
 }
