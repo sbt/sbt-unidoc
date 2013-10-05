@@ -9,7 +9,7 @@ how to add this plugin
 Add the following to your `project/plugins.sbt`:
 
 ```scala
-addSbtPlugin("com.eed3si9n" % "sbt-unidoc" % "0.1.1")
+addSbtPlugin("com.eed3si9n" % "sbt-unidoc" % "0.1.2")
 ```
 
 how to unify scaladoc
