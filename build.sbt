@@ -4,7 +4,7 @@ name := "sbt-unidoc"
 
 organization := "com.eed3si9n"
 
-version := "0.3.0-SNAPSHOT"
+version := "0.3.0"
 
 sbtVersion in Global := "0.13.0" 
 
@@ -36,7 +36,7 @@ scriptedBufferLog := false
 publishMavenStyle := false
 
 publishTo <<= (version) { version: String =>
-   val scalasbt = "http://scalasbt.artifactoryonline.com/scalasbt/"
+   val scalasbt = "http://repo.scala-sbt.org/scalasbt/sbt-plugin-releases/"
    val (name, u) = if (version.contains("-SNAPSHOT")) ("sbt-plugin-snapshots", scalasbt+"sbt-plugin-snapshots")
                    else ("sbt-plugin-releases", scalasbt+"sbt-plugin-releases")
    Some(Resolver.url(name, url(u))(Resolver.ivyStylePatterns))
@@ -44,6 +44,6 @@ publishTo <<= (version) { version: String =>
 
 credentials += Credentials(Path.userHome / ".ivy2" / ".sbtcredentials")
 
-// lsSettings
+lsSettings
 
-// LsKeys.tags in LsKeys.lsync := Seq("sbt", "doc")
+LsKeys.tags in LsKeys.lsync := Seq("sbt", "doc")

@@ -1,0 +1,23 @@
+  [1]: http://www.scala-sbt.org/release/docs/Detailed-Topics/Tasks.html#getting-values-from-multiple-scopes
+  [@inkytonik]: https://github.com/inkytonik
+  [2]: https://github.com/sbt/sbt-unidoc/issues/2
+
+## ScopeFilter support
+
+Previous releases of sbt-unidoc was hardcoded to `Compile` configuration. By using [ScopeFilter feature][1] added in sbt 0.13, sbt-unidoc 0.3.0 is able to unify Scaladocs from arbiterary projects and configurations. For instance, to exclude a project:
+
+    unidocProjectFilter in (ScalaUnidoc, unidoc) := inAnyProject -- inProjects(typelevel)
+
+or to use only given projects:
+
+    unidocProjectFilter in (ScalaUnidoc, unidoc) := inProjects(library, app)
+
+Out of the box, simply adding `unidocSettings` to the root project's setting would wire `unidoc` to `Compile` configuration and `test:unidoc` to unify Scaladocs for `Test` configuration. Here how we can create unidoc for both `Compile` and `Test`:
+
+    unidocConfigurationFilter in (TestScalaUnidoc, unidoc) := inConfigurations(Compile, Test)
+
+This feature was requested by [@inkytonik][@inkytonik] in [#2][2].
+
+### breaking changes
+
+String-based `excludedProjects` is now replaced with `unidocProjectFilter`.

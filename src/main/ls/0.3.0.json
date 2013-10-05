@@ -1,0 +1,25 @@
+{
+  "organization" : "com.eed3si9n",
+  "name" : "sbt-unidoc",
+  "version" : "0.3.0",
+  "description" : "sbt plugin to create a unified API document across projects",
+  "site" : "",
+  "tags" : [ "sbt", "doc" ],
+  "docs" : "",
+  "resolvers" : [ "https://oss.sonatype.org/content/repositories/releases" ],
+  "dependencies" : [ {
+    "organization" : "org.scala-sbt",
+    "name" : "scripted-sbt",
+    "version" : "0.13.0"
+  }, {
+    "organization" : "org.scala-sbt",
+    "name" : "sbt-launch",
+    "version" : "0.13.0"
+  } ],
+  "scalas" : [ "2.10.2" ],
+  "licenses" : [ {
+    "name" : "Apache License v2",
+    "url" : "http://www.apache.org/licenses/LICENSE-2.0.html"
+  } ],
+  "sbt" : true
+}
