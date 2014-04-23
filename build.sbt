@@ -6,9 +6,7 @@ organization := "com.eed3si9n"
 
 version := "0.3.0"
 
-sbtVersion in Global := "0.13.0" 
-
-scalaVersion in Global := "2.10.2" 
+scalaVersion in Global := "2.10.2"
 
 // CrossBuilding.crossSbtVersions := Seq("0.11.3", "0.11.2" ,"0.12")
 

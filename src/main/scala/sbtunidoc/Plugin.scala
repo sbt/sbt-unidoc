@@ -19,8 +19,9 @@ object Plugin extends sbt.Plugin {
     val unidocScopeFilter         = settingKey[ScopeFilter]("Control sources to be included in unidoc.")
     val unidocProjectFilter       = settingKey[ScopeFilter.ProjectFilter]("Control projects to be included in unidoc.")
     val unidocConfigurationFilter = settingKey[ScopeFilter.ConfigurationFilter]("Control configurations to be included in unidoc.")
+    val unidocGenjavadocVersion   = settingKey[String]("Version of the genjavadoc compiler plugin.")
   }
-  
+
   def baseCommonUnidocTasks(sc: Configuration): Seq[sbt.Def.Setting[_]] = Seq(
     doc := Unidoc(streams.value.cacheDirectory, (compilers in unidoc).value, (sources in unidoc).value, (fullClasspath in unidoc).value,
       (scalacOptions in unidoc).value, (javacOptions in unidoc).value, (apiMappings in unidoc).value, (maxErrors in unidoc).value,
@@ -40,7 +41,8 @@ object Plugin extends sbt.Plugin {
     //   inAnyProject -- inProjects(buildStructure.value.allProjectRefs filter { p => exclude contains (p.project) }: _*)
     // },
     // excludedProjects in unidoc := Seq(),
-    unidocConfigurationFilter in unidoc := inConfigurations(sc)
+    unidocConfigurationFilter in unidoc := inConfigurations(sc),
+    unidocGenjavadocVersion in Global := "0.7"
   )
   def baseScalaUnidocTasks(sc: Configuration): Seq[sbt.Def.Setting[_]] = baseCommonUnidocTasks(sc) ++ Seq(
     target in unidoc := crossTarget.value / "unidoc",
@@ -56,10 +58,10 @@ object Plugin extends sbt.Plugin {
       (t / "java" ** "*.java").get ++ s.filter(_.getName.endsWith(".java"))
     },
     javacOptions in doc := (javacOptions in (sc, doc)).value
-  )  
+  )
   /** Add this to child projects to generate equivalent java files out of scala files. */
   lazy val genjavadocSettings: Seq[sbt.Def.Setting[_]] = Seq(
-    libraryDependencies += compilerPlugin("com.typesafe.genjavadoc" %% "genjavadoc-plugin" % "0.5" cross CrossVersion.full),
+    libraryDependencies += compilerPlugin("com.typesafe.genjavadoc" %% "genjavadoc-plugin" % unidocGenjavadocVersion.value cross CrossVersion.full),
     scalacOptions <+= target map (t => "-P:genjavadoc:out=" + (t / "java")))
   /** Add this to child projects to replace packaged javadoc with the genjavadoc. */
   lazy val genjavadocExtraSettings: Seq[sbt.Def.Setting[_]] = genjavadocExtraTask(Genjavadoc, Compile)
@@ -80,7 +82,7 @@ object Plugin extends sbt.Plugin {
     inConfig(c)(Defaults.configSettings ++ baseJavaUnidocTasks(sc)) ++ Seq(
       unidoc in sc := Seq((doc in c).value)
     )
-  
+
   /** Add this to the root project to generate Scala unidoc. */
   lazy val scalaUnidocSettings: Seq[sbt.Def.Setting[_]] =
     scalaUnidocTask(ScalaUnidoc, Compile) ++
@@ -100,7 +102,7 @@ object Plugin extends sbt.Plugin {
     scalaJavaUnidocTask(ScalaUnidoc, JavaUnidoc, Compile) ++
     scalaJavaUnidocTask(TestScalaUnidoc, TestJavaUnidoc, Test)
   def scalaJavaUnidocTask(c1: Configuration, c2: Configuration, sc: Configuration): Seq[sbt.Def.Setting[_]] =
-    inConfig(c1)(Defaults.configSettings ++ baseScalaUnidocTasks(sc)) ++ 
+    inConfig(c1)(Defaults.configSettings ++ baseScalaUnidocTasks(sc)) ++
     inConfig(c2)(Defaults.configSettings ++ baseJavaUnidocTasks(sc)) ++ Seq(
       unidoc in sc <<= (doc in c1, doc in c2) map { (s, j) => Seq(s, j) })
 
@@ -150,6 +152,6 @@ object Plugin extends sbt.Plugin {
     lazy val allClasspathsTask = Def.taskDyn {
       val f = (unidocScopeFilter in unidoc).value
       dependencyClasspath.all(f)
-    }   
+    }
   }
 }
