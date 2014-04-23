@@ -4,7 +4,7 @@ name := "sbt-unidoc"
 
 organization := "com.eed3si9n"
 
-version := "0.3.0"
+version := "0.3.1"
 
 scalaVersion in Global := "2.10.2"
 

@@ -1,0 +1,11 @@
+
+## unidocGenjavadocVersion
+
+sbt-unidoc 0.3.1 updates the underlying [genjavadoc][1] compiler plugin to 0.7, which fixes [resource leakage][37].
+
+It also adds a new key `unidocGenjavadocVersion` to make the setting configurable. The change was contributed by [@2m][2m] as [#4][4].
+
+  [1]: https://github.com/typesafehub/genjavadoc
+  [2m]: https://github.com/2m
+  [4]: https://github.com/sbt/sbt-unidoc/pull/4
+  [37]: https://github.com/typesafehub/genjavadoc/pull/37
