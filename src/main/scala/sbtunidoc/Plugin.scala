@@ -32,7 +32,7 @@ object Plugin extends sbt.Plugin {
     javacOptions in unidoc := (javacOptions in (sc, doc)).value,
     fullClasspath in unidoc := (unidocAllClasspaths in unidoc).value.flatten.distinct,
     unidocAllClasspaths in unidoc := Unidoc.allClasspathsTask.value,
-    apiMappings in unidoc := (apiMappings in sc).value,
+    apiMappings in unidoc := (apiMappings in (sc, doc)).value,
     maxErrors in unidoc := (maxErrors in (sc, doc)).value,
     unidocScopeFilter in unidoc := ScopeFilter((unidocProjectFilter in unidoc).value, (unidocConfigurationFilter in unidoc).value),
     unidocProjectFilter in unidoc := inAnyProject,
