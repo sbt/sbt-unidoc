@@ -16,6 +16,7 @@ object Plugin extends sbt.Plugin {
     val unidoc                    = taskKey[Seq[File]]("Create unified scaladoc for all aggregates.")
     val unidocAllSources          = taskKey[Seq[Seq[File]]]("All sources.")
     val unidocAllClasspaths       = taskKey[Seq[Classpath]]("All classpaths.")
+    val unidocAllAPIMappings      = taskKey[Seq[Map[File, URL]]]("All API mappings.")
     val unidocScopeFilter         = settingKey[ScopeFilter]("Control sources to be included in unidoc.")
     val unidocProjectFilter       = settingKey[ScopeFilter.ProjectFilter]("Control projects to be included in unidoc.")
     val unidocConfigurationFilter = settingKey[ScopeFilter.ConfigurationFilter]("Control configurations to be included in unidoc.")
@@ -32,7 +33,12 @@ object Plugin extends sbt.Plugin {
     javacOptions in unidoc := (javacOptions in (sc, doc)).value,
     fullClasspath in unidoc := (unidocAllClasspaths in unidoc).value.flatten.distinct,
     unidocAllClasspaths in unidoc := Unidoc.allClasspathsTask.value,
-    apiMappings in unidoc := (apiMappings in (sc, doc)).value,
+    apiMappings in unidoc := {
+      val all = (unidocAllAPIMappings in unidoc).value
+      val allList = all map { _.toList }
+      allList.flatten.distinct.toMap
+    },
+    unidocAllAPIMappings in unidoc := Unidoc.allAPIMappingsTask.value,
     maxErrors in unidoc := (maxErrors in (sc, doc)).value,
     unidocScopeFilter in unidoc := ScopeFilter((unidocProjectFilter in unidoc).value, (unidocConfigurationFilter in unidoc).value),
     unidocProjectFilter in unidoc := inAnyProject,
@@ -152,6 +158,10 @@ object Plugin extends sbt.Plugin {
     lazy val allClasspathsTask = Def.taskDyn {
       val f = (unidocScopeFilter in unidoc).value
       dependencyClasspath.all(f)
+    }
+    lazy val allAPIMappingsTask = Def.taskDyn {
+      val f = (unidocScopeFilter in unidoc).value
+      (apiMappings in (Compile, doc)).all(f)      
     }
   }
 }
