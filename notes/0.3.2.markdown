@@ -1,0 +1,8 @@
+  [@travisbrown]: https://github.com/travisbrown
+  [10]: https://github.com/sbt/sbt-unidoc/pull/10
+
+## `apiMappings` and `autoAPIMappings`
+
+sbt-unidoc 0.3.2 fixes the handling of `apiMappings`.
+To use `autoAPIMappings`, turn it on in *all subprojects*, and the API mappings would be aggregated.
+The fix was contributed by [@travisbrown][@travisbrown] in [#10][10].

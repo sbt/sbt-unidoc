@@ -27,7 +27,8 @@ Here's an example setup using multi-project build.sbt:
 val commonSettings = Seq(
     organization := "com.example",
     version := "0.1-SNAPSHOT",
-    scalaVersion := "2.10.3"
+    scalaVersion := "2.10.3",
+    autoAPIMappings := true
   )
 
 val library = (project in file("library")).
