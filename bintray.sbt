@@ -2,5 +2,5 @@ import bintray.Keys._
 
 bintrayPublishSettings
 publishMavenStyle := false
-bintrayOrganization in bintray := None
-repository in bintray := "sbt-plugins"
+bintrayOrganization in bintray := Some("sbt")
+repository in bintray := "sbt-plugin-releases"
