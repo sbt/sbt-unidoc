@@ -1,0 +1,8 @@
+  [@rkuhn]: https://github.com/rkuhn
+  [13]: https://github.com/sbt/sbt-unidoc/pull/13
+
+## Resolved edge case when generating java docs
+
+sbt-unidoc 0.3.3 fixes the unidoc task not properly forcing compilation
+before generating docs, thus missing generated sources (if there are any).
+The fix was contributed by [@rkuhn][@rkuhn] in [#13][13].
