@@ -175,16 +175,15 @@ val root = (project in file(".")).
   aggregate(library, app)
 ```
 
-`genjavadocSettings` adds a compiler plugin called [genjavadoc][genjavadoc], which generates Java source code into `target/"java"` from Scala source code, so javadoc can be generated. The main benefits of javadoc are having natural documentation for Java API, IDE support, and Java enum support. However, the genjavadoc does not always generate compilable Java code. YMMV.
+`genjavadocSettings` adds a compiler plugin called [genjavadoc][genjavadoc], which generates Java source code into `target/java` from Scala source code, so javadoc can be generated. The main benefits of javadoc are having natural documentation for Java API, IDE support, and Java enum support. However, the genjavadoc does not always generate compilable Java code; if you see misbehavior please open an issue with `genjavadoc`.
 
-First `clean` then `compile` all projects (in the above, root aggreates both children), then run `unidoc` task from the root project:
+First `clean` all projects (in the above, root aggreates both children), then run `unidoc` task from the root project:
 
 ```
 foo> clean
 [success] Total time: 0 s, completed May 16, 2013 1:13:55 AM
-foo> compile
-...
 foo> unidoc
+[info] Compiling 10 Scala sources ...
 [info] Generating Java API documentation for main sources to /unidoc-sample/target/javaunidoc...
 [warn] Loading source file /unidoc-sample/app/target/java/foo/App$.java...
 ....
@@ -192,7 +191,8 @@ foo> unidoc
 [success] Total time: 1 s, completed May 16, 2013 1:14:12 AM
 ```
 
-A Java unidoc is created under `target/"javaunidoc"` containing entities from all projects under the build.
+Cleaning is necessary since genjavadoc does not track the correspondence between Scala sources and emitted Java files, leading to extraneous Java sources when deleting classes.
+A Java unidoc is created under `target/javaunidoc` containing entities from all projects under the build.
 
 how to publish genjavadoc instead of scaladoc
 ---------------------------------------------

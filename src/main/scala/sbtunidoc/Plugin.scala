@@ -60,7 +60,7 @@ object Plugin extends sbt.Plugin {
   )
   def baseGenjavadocExtraTasks(sc: Configuration): Seq[sbt.Def.Setting[_]] = Seq(
     artifactName in packageDoc := { (sv, mod, art) => "" + mod.name + "_" + sv.binary + "-" + mod.revision + "-javadoc.jar" },
-    sources <<= (target, sources in sc) map { (t, s) =>
+    sources <<= (target, sources in sc, compile in sc) map { (t, s, c) =>
       (t / "java" ** "*.java").get ++ s.filter(_.getName.endsWith(".java"))
     },
     javacOptions in doc := (javacOptions in (sc, doc)).value
@@ -147,6 +147,7 @@ object Plugin extends sbt.Plugin {
       sources.all(f)
     }
     lazy val javaSources: sbt.Def.Initialize[Task[Seq[File]]] = Def.task {
+      val compiled = compile.value
       val sourceJavaFiles = sources.value filter {_.getName endsWith ".java"}
       val targetJavaFiles: Seq[File] = (target.value / "java" ** "*.java").get.sorted
       sourceJavaFiles ++ targetJavaFiles
