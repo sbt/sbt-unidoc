@@ -9,7 +9,7 @@ how to add this plugin
 For sbt 0.13 add the following to your `project/unidoc.sbt`:
 
 ```scala
-addSbtPlugin("com.eed3si9n" % "sbt-unidoc" % "0.3.2")
+addSbtPlugin("com.eed3si9n" % "sbt-unidoc" % "0.3.3")
 ```
 
 For sbt 0.12, see [sbt-unidoc 0.1.2](https://github.com/sbt/sbt-unidoc/tree/v0.1.2)
