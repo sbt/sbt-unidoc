@@ -119,7 +119,7 @@ addSbtPlugin("com.typesafe.sbt" % "sbt-ghpages" % "0.5.2")
 Then in `build.sbt` import `GitKeys`,
 
 ```scala
-import com.typesafe.sbt.SbtGit.{GitKeys => git}
+import com.typesafe.sbt.SbtGit.GitKeys._
 ```
 
 add `site.settings` and `ghpages.settings` to the root project's settings, and then add `mappings in packageDoc in ScalaUnidoc` to the site's mapping:
@@ -132,7 +132,7 @@ val root = (project in file(".")).
   settings(
     name := "foo",
     site.addMappingsToSiteDir(mappings in (ScalaUnidoc, packageDoc), "latest/api"),
-    git.remoteRepo := "git@github.com:user/foo.git"
+    gitRemoteRepo := "git@github.com:user/foo.git"
   ).
   aggregate(library, app)
 ```
