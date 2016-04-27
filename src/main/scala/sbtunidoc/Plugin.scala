@@ -48,7 +48,7 @@ object Plugin extends sbt.Plugin {
     // },
     // excludedProjects in unidoc := Seq(),
     unidocConfigurationFilter in unidoc := inConfigurations(sc),
-    unidocGenjavadocVersion in Global := "0.8"
+    unidocGenjavadocVersion in Global := "0.10"
   )
   def baseScalaUnidocTasks(sc: Configuration): Seq[sbt.Def.Setting[_]] = baseCommonUnidocTasks(sc) ++ Seq(
     target in unidoc := crossTarget.value / "unidoc",
