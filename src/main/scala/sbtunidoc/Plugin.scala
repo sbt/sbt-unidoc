@@ -125,7 +125,7 @@ object Plugin extends sbt.Plugin {
       val (options, runDoc) =
         if(hasScala)
           (sOpts ++ Opts.doc.externalAPI(xapis), // can't put the .value calls directly here until 2.10.2
-            Doc.scaladoc(label, cache / "scala", cs.scalac.onArgs(exported(s, "scaladoc"))))
+            scaladoc(label, cache / "scala", cs.scalac.onArgs(exported(s, "scaladoc"))))
         else if(hasJava)
           (jOpts,
             Doc.javadoc(label, cache / "java", cs.javac.onArgs(exported(s, "javadoc"))))
@@ -134,6 +134,7 @@ object Plugin extends sbt.Plugin {
       runDoc(srcs, cp map {_.data}, out, options, maxErrors, s.log)
       out
     }
+
     private[this] def exported(w: PrintWriter, command: String): Seq[String] => Unit = args =>
       w.println( (command +: args).mkString(" ") )
     private[this] def exported(s: TaskStreams, command: String): Seq[String] => Unit = args =>
@@ -162,7 +163,35 @@ object Plugin extends sbt.Plugin {
     }
     lazy val allAPIMappingsTask = Def.taskDyn {
       val f = (unidocScopeFilter in unidoc).value
-      (apiMappings in (Compile, doc)).all(f)      
+      (apiMappings in (Compile, doc)).all(f)
+    }
+
+    // Ideally, this could all go into SBT. Little steps...
+    import compiler.{ AnalyzingCompiler}
+    import RawCompileLike._
+    import xsbti.{Position, Severity}
+    import Severity.{ Error, Warn }
+
+    private[this] def scaladoc(label: String, cache: File, compiler: AnalyzingCompiler): Gen =
+      scaladoc(label, cache, compiler, Seq())
+
+    private[this] def scaladoc(label: String, cache: File, compiler: AnalyzingCompiler, fileInputOptions: Seq[String]): Gen = {
+      def doc(sources: Seq[File], classpath: Seq[File], outputDirectory: File, options: Seq[String], maximumErrors: Int, log: Logger): Unit =
+        compiler.doc(sources, classpath, outputDirectory, options, log, new ScaladocReporter(maximumErrors, log))
+
+      cached(cache, fileInputOptions, prepare(label + " Scala API documentation", doc))
+    }
+
+    class ScaladocReporter (maximumErrors: Int, log: Logger) extends sbt.LoggerReporter(maximumErrors, log) {
+
+      // mimic scaladoc behaviour and ignore errors
+      override def hasErrors = false
+
+      // Prepends the message with "error :" as in the commandline version, and turns the error to a warning.
+      override def log(pos: Position, msg: String, severity: Severity): Unit = {
+        val newSeverity = if (severity == Error) Warn else severity
+        super.log(pos, s"error: $msg", newSeverity )
+      }
     }
   }
 }
