@@ -2,9 +2,12 @@ package sbtunidoc
 
 import sbt._
 import Keys._
+import BaseUnidocPlugin.autoImport._
 
-object UnidocPlugin extends AutoPlugin {
-  object autoImport extends UnidocKeys {
+object ScalaUnidocPlugin extends AutoPlugin {
+  override def requires = BaseUnidocPlugin
+
+  object autoImport {
     lazy val ScalaUnidoc = config("scalaunidoc") extend Compile
     lazy val TestScalaUnidoc = config("testscalaunidoc") extend Test
   }
@@ -19,10 +22,10 @@ object UnidocPlugin extends AutoPlugin {
 
   def scalaUnidocTask(c: Configuration, sc: Configuration): Seq[sbt.Def.Setting[_]] =
     inConfig(c)(Defaults.configSettings ++ baseScalaUnidocTasks(sc)) ++ Seq(
-      unidoc in sc := Seq((doc in c).value)
+      unidoc in sc ++= Seq((doc in c).value)
     )
 
-  def baseScalaUnidocTasks(sc: Configuration): Seq[sbt.Def.Setting[_]] = baseCommonUnidocTasks(sc) ++ Seq(
+  def baseScalaUnidocTasks(sc: Configuration): Seq[sbt.Def.Setting[_]] = BaseUnidocPlugin.commonSettings(sc) ++ Seq(
     target in unidoc := crossTarget.value / "unidoc",
     unidocAllSources in unidoc := allScalaSources.value
   )

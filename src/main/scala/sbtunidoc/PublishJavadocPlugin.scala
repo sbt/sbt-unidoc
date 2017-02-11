@@ -3,9 +3,8 @@ package sbtunidoc
 import sbt._
 import sbt.Keys._
 
-object GenJavadocExtraPlugin extends AutoPlugin {
+object PublishJavadocPlugin extends AutoPlugin {
   override def requires = GenJavadocPlugin
-  override def trigger = NoTrigger
 
   override def projectSettings = genjavadocExtraTask(GenJavadocPlugin.autoImport.Genjavadoc, Compile)
 

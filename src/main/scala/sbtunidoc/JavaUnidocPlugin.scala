@@ -1,15 +1,18 @@
 package sbtunidoc
 
-import sbt.Keys._
 import sbt._
+import Keys._
+import BaseUnidocPlugin.autoImport._
 
 object JavaUnidocPlugin extends AutoPlugin {
-  object autoImport extends UnidocKeys {
+  object autoImport {
     lazy val JavaUnidoc     = config("javaunidoc") extend Compile
     lazy val TestJavaUnidoc = config("testjavaunidoc") extend Test
   }
 
   import autoImport._
+
+  override def requires = BaseUnidocPlugin
 
   override def projectSettings =
     javaUnidocTask(JavaUnidoc, Compile) ++
@@ -20,10 +23,10 @@ object JavaUnidocPlugin extends AutoPlugin {
 
   def javaUnidocTask(c: Configuration, sc: Configuration): Seq[sbt.Def.Setting[_]] =
     inConfig(c)(Defaults.configSettings ++ baseJavaUnidocTasks(sc)) ++ Seq(
-      unidoc in sc := Seq((doc in c).value)
+      unidoc in sc ++= Seq((doc in c).value)
     )
 
-  def baseJavaUnidocTasks(sc: Configuration): Seq[sbt.Def.Setting[_]] = baseCommonUnidocTasks(sc) ++ Seq(
+  def baseJavaUnidocTasks(sc: Configuration): Seq[sbt.Def.Setting[_]] = BaseUnidocPlugin.commonSettings(sc) ++ Seq(
     target in unidoc := target.value / "javaunidoc",
     unidocAllSources in unidoc := allJavaSourcesTask.value
   )
