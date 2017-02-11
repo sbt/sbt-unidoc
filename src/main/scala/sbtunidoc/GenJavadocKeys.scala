@@ -2,6 +2,6 @@ package sbtunidoc
 
 import sbt.settingKey
 
-trait GenJavaUnidocKeys {
+trait GenJavadocKeys {
   val unidocGenjavadocVersion = settingKey[String]("Version of the genjavadoc compiler plugin.")
 }

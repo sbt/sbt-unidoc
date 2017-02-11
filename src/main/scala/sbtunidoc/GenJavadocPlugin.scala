@@ -4,7 +4,7 @@ import sbt._
 import sbt.Keys._
 
 object GenJavadocPlugin extends AutoPlugin {
-  object autoImport extends GenJavaUnidocKeys {
+  object autoImport extends GenJavadocKeys {
     lazy val Genjavadoc = config("genjavadoc") extend Compile
   }
   import autoImport._
