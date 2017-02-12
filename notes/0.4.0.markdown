@@ -1,0 +1,21 @@
+## auto plugin
+
+[@nrinaudo][@nrinaudo] contributed migration to auto plugin in [#31][31].
+
+Before:
+
+    import UnidocKeys._
+    val root = (project in file("."))
+      .aggregate(library, app)
+      .settings(commonSettings: _*)
+      .settings(unidocSettings: _*)
+
+After:
+
+    val root = (project in file("."))
+      .enablePlugins(ScalaUnidocPlugin)
+      .aggregate(library, app)
+      .settings(commonSettings: _*)
+
+  [@nrinaudo]: https://github.com/nrinaudo
+  [31]: https://github.com/sbt/sbt-unidoc/pull/31
