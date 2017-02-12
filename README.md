@@ -24,6 +24,11 @@ Note: If one of your subprojects is defining def macros, add `scalacOptions in (
 Here's an example setup using multi-project build.sbt:
 
 ```scala
+import sbtunidoc.Plugin._
+
+...
+
+
 val commonSettings = Seq(
     organization := "com.example",
     version := "0.1-SNAPSHOT",
