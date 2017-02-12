@@ -4,6 +4,10 @@ import sbt.Keys._
 import sbt._
 import sbt.plugins.JvmPlugin
 
+/** Provides default settings for unidoc plugins.
+  *
+  * There's no reason to enable this plugin directly. See [[ScalaUnidocPlugin]] or [[JavaUnidocPlugin]] instead.
+  */
 object BaseUnidocPlugin extends AutoPlugin {
   object autoImport extends UnidocKeys
   import autoImport._

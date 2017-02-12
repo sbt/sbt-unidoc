@@ -3,6 +3,7 @@ package sbtunidoc
 import sbt._
 import sbt.Keys._
 
+/** Publishes javadoc artifacts rather than scaladoc ones. */
 object PublishJavadocPlugin extends AutoPlugin {
   override def requires = GenJavadocPlugin
 

@@ -4,6 +4,10 @@ import sbt._
 import Keys._
 import BaseUnidocPlugin.autoImport._
 
+/** Generates unified javadoc documentation.
+  *
+  * This plugin must be enabled on the aggregating project. Children projects must enable [[GenJavadocPlugin]].
+  */
 object JavaUnidocPlugin extends AutoPlugin {
   object autoImport {
     lazy val JavaUnidoc     = config("javaunidoc") extend Compile

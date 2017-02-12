@@ -17,7 +17,7 @@ For sbt 0.12, see [sbt-unidoc 0.1.2](https://github.com/sbt/sbt-unidoc/tree/v0.1
 how to unify scaladoc
 ---------------------
 
-1. Add `unidocSettings` to your root project's settings.
+1. Enable `ScalaUnidocPlugin` in your root project's settings.
 
 Note: If one of your subprojects is defining def macros, add `scalacOptions in (ScalaUnidoc, unidoc) += "-Ymacro-no-expand"` to the root project's setting to temporary halt the macro expansion.
 
@@ -46,7 +46,7 @@ val app = (project in file("app")).
 
 val root = (project in file(".")).
   settings(commonSettings: _*).
-  settings(unidocSettings: _*).
+  enablePlugins(ScalaUnidocPlugin).
   settings(
     name := "foo"
   ).
@@ -68,13 +68,12 @@ A Scala unidoc is created under `crossTarget / "unidoc"` containing entities fro
 how to exclude a project
 ------------------------
 
-1. Import `UnidocKeys._`.
-2. Construct `unidocProjectFilter in (ScalaUnidoc, unidoc)` in the root project's settings.
+1. Construct `unidocProjectFilter in (ScalaUnidoc, unidoc)` in the root project's settings.
 
 ```scala
 val root = (project in file(".")).
   settings(commonSettings: _*).
-  settings(unidocSettings: _*).
+  enablePlugins(ScalaUnidocPlugin).
   settings(
     name := "foo",
     unidocProjectFilter in (ScalaUnidoc, unidoc) := inAnyProject -- inProjects(app)
@@ -87,16 +86,15 @@ This will skip Scaladoc for the app project.
 how to include multiple configurations
 --------------------------------------
 
-1. Import `UnidocKeys._`.
-2. Construct `unidocConfigurationFilter in (ScalaUnidoc, unidoc)` in the root project's settings.
+1. Construct `unidocConfigurationFilter in (ScalaUnidoc, unidoc)` in the root project's settings.
 
 ```scala
 val root = (project in file(".")).
   settings(commonSettings: _*).
-  settings(unidocSettings: _*).
+  enablePlugins(ScalaUnidocPlugin).
   settings(
     name := "foo",
-    unidocConfigurationFilter in (TestScalaUnidoc, unidoc) := inConfigurations(Compile, Test),
+    unidocConfigurationFilter in (TestScalaUnidoc, unidoc) := inConfigurations(Compile, Test)
   ).
   aggregate(library, app)
 ```
@@ -109,11 +107,9 @@ how to publish Scala unidoc to Github Pages
 Add sbt-site and sbt-ghpages to your `project/site.sbt`:
 
 ```scala
-resolvers += "jgit-repo" at "http://download.eclipse.org/jgit/maven"
+addSbtPlugin("com.typesafe.sbt" % "sbt-site" % "1.2.0")
 
-addSbtPlugin("com.typesafe.sbt" % "sbt-site" % "0.7.1")
-
-addSbtPlugin("com.typesafe.sbt" % "sbt-ghpages" % "0.5.2")
+addSbtPlugin("com.typesafe.sbt" % "sbt-ghpages" % "0.6.0")
 ```
 
 Then in `build.sbt` import `GitKeys`,
@@ -122,16 +118,16 @@ Then in `build.sbt` import `GitKeys`,
 import com.typesafe.sbt.SbtGit.GitKeys._
 ```
 
-add `site.settings` and `ghpages.settings` to the root project's settings, and then add `mappings in packageDoc in ScalaUnidoc` to the site's mapping:
+Add `mappings in packageDoc in ScalaUnidoc` to the site's mapping:
 
 ```scala
 val root = (project in file(".")).
   settings(commonSettings: _*).
-  settings(unidocSettings: _*).
-  settings(site.settings ++ ghpages.settings: _*).
+  enablePlugins(ScalaUnidocPlugin, GhpagesPlugin).
   settings(
     name := "foo",
-    site.addMappingsToSiteDir(mappings in (ScalaUnidoc, packageDoc), "latest/api"),
+    siteSubdirName in ScalaUnidoc := "latest/api",
+    addMappingsToSiteDir(mappings in (ScalaUnidoc, packageDoc), siteSubdirName in ScalaUnidoc),
     gitRemoteRepo := "git@github.com:user/foo.git"
   ).
   aggregate(library, app)
@@ -140,27 +136,34 @@ val root = (project in file(".")).
 Here's how to preview and publish it:
 
 ```
-foo> preview-site
-foo> ghpages-push-site
+foo> previewSite
+foo> ghpagesPushSite
 ```
 
 how to unify javadoc
 --------------------
 
-1. Add `genjavadocSettings` to child projects' settings.
-2. Add `javaUnidocSettings` to the root project's settings.
+1. Enable `GenJavadocPlugin` in child projects.
+2. Enable `JavaUnidocPlugin` in the root project.
 
 ```scala
+val commonSettings = Seq(
+    organization := "com.example",
+    version := "0.1-SNAPSHOT",
+    scalaVersion := "2.10.3",
+    autoAPIMappings := true
+)
+
 val library = (project in file("library")).
   settings(commonSettings: _*).
-  settings(genjavadocSettings: _*).
+  enablePlugins(GenJavadocPlugin).
   settings(
     name := "foo-library"
   )
 
 val app = (project in file("app")).
   settings(commonSettings: _*).
-  settings(genjavadocSettings: _*).
+  enablePlugins(GenJavadocPlugin).
   settings(
     name := "foo-app"
   ).
@@ -168,14 +171,14 @@ val app = (project in file("app")).
 
 val root = (project in file(".")).
   settings(commonSettings: _*).
-  settings(javaUnidocSettings: _*).
+  enablePlugins(JavaUnidocPlugin).
   settings(
     name := "foo"
   ).
   aggregate(library, app)
 ```
 
-`genjavadocSettings` adds a compiler plugin called [genjavadoc][genjavadoc], which generates Java source code into `target/java` from Scala source code, so javadoc can be generated. The main benefits of javadoc are having natural documentation for Java API, IDE support, and Java enum support. However, the genjavadoc does not always generate compilable Java code; if you see misbehavior please open an issue with `genjavadoc`.
+`GenJavadocPlugin` adds a compiler plugin called [genjavadoc][genjavadoc], which generates Java source code into `target/java` from Scala source code, so javadoc can be generated. The main benefits of javadoc are having natural documentation for Java API, IDE support, and Java enum support. However, the genjavadoc does not always generate compilable Java code; if you see misbehavior please open an issue with `genjavadoc`.
 
 First `clean` all projects (in the above, root aggreates both children), then run `unidoc` task from the root project:
 
@@ -197,15 +200,15 @@ A Java unidoc is created under `target/javaunidoc` containing entities from all 
 how to publish genjavadoc instead of scaladoc
 ---------------------------------------------
 
-1. Add `genjavadocExtraSettings` to the child projects.
+1. Enable `PublishJavadocPlugin` in child projects.
 
 This will substitute the `packageDoc in Compile` with `packageDoc in Genjavadoc` to use the enhanced Javadoc.
 
 how to unify both Scaladoc and Javadoc
 --------------------------------------
 
-1. Add `genjavadocSettings` (or `genjavadocExtraSettings`) to child projects' settings.
-2. Add `scalaJavaUnidocSettings` to the root project's settings.
+1. Enable `GenJavadocPlugin` (or `PublishJavadocPlugin`) in child projects.
+2. Enable `ScalaUnidocPlugin` and `JavaUnidocPlugin` in the root project.
 
 This combines both Scala unidoc settings and Java unidoc settings. Run `unidoc` from the root project to execute both.
 

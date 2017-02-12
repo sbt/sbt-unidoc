@@ -4,6 +4,7 @@ import sbt._
 import Keys._
 import BaseUnidocPlugin.autoImport._
 
+/** Generates unified scaladoc documentation. */
 object ScalaUnidocPlugin extends AutoPlugin {
   override def requires = BaseUnidocPlugin
 
