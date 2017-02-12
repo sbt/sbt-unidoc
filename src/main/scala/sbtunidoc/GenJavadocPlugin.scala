@@ -2,6 +2,7 @@ package sbtunidoc
 
 import sbt._
 import sbt.Keys._
+import sbt.plugins.JvmPlugin
 
 object GenJavadocPlugin extends AutoPlugin {
   object autoImport extends GenJavadocKeys {
@@ -10,6 +11,8 @@ object GenJavadocPlugin extends AutoPlugin {
   import autoImport._
 
   override def globalSettings = unidocGenjavadocVersion := "0.10"
+
+  override def requires = JvmPlugin
 
   override def projectSettings = Seq(
     libraryDependencies += compilerPlugin("com.typesafe.genjavadoc" %% "genjavadoc-plugin" % unidocGenjavadocVersion.value cross CrossVersion.full),

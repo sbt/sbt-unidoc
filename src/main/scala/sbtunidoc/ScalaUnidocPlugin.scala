@@ -25,7 +25,7 @@ object ScalaUnidocPlugin extends AutoPlugin {
       unidoc in sc ++= Seq((doc in c).value)
     )
 
-  def baseScalaUnidocTasks(sc: Configuration): Seq[sbt.Def.Setting[_]] = BaseUnidocPlugin.commonSettings(sc) ++ Seq(
+  def baseScalaUnidocTasks(sc: Configuration): Seq[sbt.Def.Setting[_]] = BaseUnidocPlugin.baseUnidocSettings(sc) ++ Seq(
     target in unidoc := crossTarget.value / "unidoc",
     unidocAllSources in unidoc := allScalaSources.value
   )

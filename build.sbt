@@ -4,7 +4,7 @@ lazy val commonSettings = Seq(
 )
 
 lazy val root = (project in file(".")).
-  enablePlugins(GitVersioning).
+  settings(version := "0.3.4-SNAPSHOT").
   settings(commonSettings: _*).
   settings(
     sbtPlugin := true,

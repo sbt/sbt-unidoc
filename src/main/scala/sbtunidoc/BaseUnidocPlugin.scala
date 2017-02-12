@@ -2,6 +2,7 @@ package sbtunidoc
 
 import sbt.Keys._
 import sbt._
+import sbt.plugins.JvmPlugin
 
 object BaseUnidocPlugin extends AutoPlugin {
   object autoImport extends UnidocKeys
@@ -12,7 +13,9 @@ object BaseUnidocPlugin extends AutoPlugin {
     unidoc in Test := Seq.empty
   )
 
-  def commonSettings(sc: Configuration): Seq[sbt.Def.Setting[_]] = Seq(
+  override def requires = JvmPlugin
+
+  def baseUnidocSettings(sc: Configuration): Seq[sbt.Def.Setting[_]] = Seq(
     doc := Unidoc(streams.value.cacheDirectory, (compilers in unidoc).value, (sources in unidoc).value, (fullClasspath in unidoc).value,
       (scalacOptions in unidoc).value, (javacOptions in unidoc).value, (apiMappings in unidoc).value, (maxErrors in unidoc).value,
       (target in unidoc).value, configuration.value, streams.value),
