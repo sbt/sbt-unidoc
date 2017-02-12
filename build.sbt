@@ -1,5 +1,5 @@
 lazy val commonSettings = Seq(
-  git.baseVersion in ThisBuild := "0.3.3",
+  git.baseVersion in ThisBuild := "0.4.0",
   organization in ThisBuild := "com.eed3si9n"
 )
 
