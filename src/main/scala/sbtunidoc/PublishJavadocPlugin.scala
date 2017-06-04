@@ -11,13 +11,14 @@ object PublishJavadocPlugin extends AutoPlugin {
 
   def genjavadocExtraTask(c: Configuration, sc: Configuration): Seq[sbt.Def.Setting[_]] =
     inConfig(c)(Defaults.configSettings ++ baseGenjavadocExtraTasks(sc)) ++ Seq(
-      packageDoc in sc <<= packageDoc in c
+      packageDoc in sc := (packageDoc in c).value
     )
 
   def baseGenjavadocExtraTasks(sc: Configuration): Seq[sbt.Def.Setting[_]] = Seq(
     artifactName in packageDoc := { (sv, mod, art) => "" + mod.name + "_" + sv.binary + "-" + mod.revision + "-javadoc.jar" },
-    sources <<= (target, sources in sc, compile in sc) map { (t, s, c) =>
-      (t / "java" ** "*.java").get ++ s.filter(_.getName.endsWith(".java"))
+    sources := {
+      (compile in sc).value
+      (target.value / "java" ** "*.java").get ++ (sources in sc).value.filter(_.getName.endsWith(".java"))
     },
     javacOptions in doc := (javacOptions in (sc, doc)).value
   )
