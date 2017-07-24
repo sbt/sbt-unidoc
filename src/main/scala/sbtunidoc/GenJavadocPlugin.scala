@@ -16,5 +16,5 @@ object GenJavadocPlugin extends AutoPlugin {
 
   override def projectSettings = Seq(
     libraryDependencies += compilerPlugin("com.typesafe.genjavadoc" %% "genjavadoc-plugin" % unidocGenjavadocVersion.value cross CrossVersion.full),
-    scalacOptions <+= target map (t => "-P:genjavadoc:out=" + (t / "java")))
+    scalacOptions += ("-P:genjavadoc:out=" + (target.value / "java")))
 }
