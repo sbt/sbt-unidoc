@@ -2,6 +2,7 @@ package sbtunidoc
 
 import sbt._
 import sbt.Keys._
+import xsbti.Reporter
 
 object Unidoc {
   import java.io.PrintWriter
@@ -9,7 +10,7 @@ object Unidoc {
   // This is straight out of docTaskSettings in Defaults.scala.
   def apply(cache: File, cs: Compiler.Compilers, srcs: Seq[File], cp: Classpath,
             sOpts: Seq[String], jOpts: Seq[String], xapis: Map[File, URL], maxErrors: Int,
-            out: File, config: Configuration, s: TaskStreams): File = {
+            out: File, config: Configuration, s: TaskStreams, spm: Seq[xsbti.Position => Option[xsbti.Position]]): File = {
     val hasScala = srcs.exists(_.name.endsWith(".scala"))
     val hasJava = srcs.exists(_.name.endsWith(".java"))
     val label = nameForSrc(config.name)
@@ -25,6 +26,7 @@ object Unidoc {
     runDoc(srcs, cp map {_.data}, out, options, maxErrors, s.log)
     out
   }
+
   private[this] def exported(w: PrintWriter, command: String): Seq[String] => Unit = args =>
     w.println( (command +: args).mkString(" ") )
   private[this] def exported(s: TaskStreams, command: String): Seq[String] => Unit = args =>

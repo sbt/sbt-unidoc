@@ -22,7 +22,7 @@ object BaseUnidocPlugin extends AutoPlugin {
   def baseUnidocSettings(sc: Configuration): Seq[sbt.Def.Setting[_]] = Seq(
     doc := Unidoc(streams.value.cacheDirectory, (compilers in unidoc).value, (sources in unidoc).value, (fullClasspath in unidoc).value,
       (scalacOptions in unidoc).value, (javacOptions in unidoc).value, (apiMappings in unidoc).value, (maxErrors in unidoc).value,
-      (target in unidoc).value, configuration.value, streams.value),
+      (target in unidoc).value, configuration.value, streams.value, (sourcePositionMappers in unidoc).value),
     compilers in unidoc := (compilers in sc).value,
     sources in unidoc := (unidocAllSources in unidoc).value.flatten,
     scalacOptions in unidoc := (scalacOptions in (sc, doc)).value,
