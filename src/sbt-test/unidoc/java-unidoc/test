@@ -1,0 +1,9 @@
+> unidoc
+
+$ exists target/javaunidoc/allclasses-frame.html
+$ exists target/javaunidoc/example/A.html
+$ exists target/javaunidoc/example/B.html
+-$ exists target/javaunidoc/example/C.html
+
+-$ exists target/scala-2.11/unidoc/example/A.html
+-$ exists target/scala-2.11/unidoc/example/B.html
