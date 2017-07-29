@@ -1,0 +1,4 @@
+> unidoc
+$ exists target/scala-2.11/unidoc/example/A.html
+$ exists target/scala-2.11/unidoc/example/B.html
+-$ exists target/scala-2.11/unidoc/example/C.html
