@@ -6,13 +6,11 @@ sbt plugin to unify scaladoc/javadoc across multiple projects.
 how to add this plugin
 ----------------------
 
-For sbt 0.13 add the following to your `project/unidoc.sbt`:
+For sbt 0.13 and sbt 1.x add the following to your `project/unidoc.sbt`:
 
 ```scala
-addSbtPlugin("com.eed3si9n" % "sbt-unidoc" % "0.4.0")
+addSbtPlugin("com.eed3si9n" % "sbt-unidoc" % "0.4.1")
 ```
-
-For sbt 0.12, see [sbt-unidoc 0.1.2](https://github.com/sbt/sbt-unidoc/tree/v0.1.2)
 
 how to unify scaladoc
 ---------------------

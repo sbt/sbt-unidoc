@@ -1,0 +1,5 @@
+## cross building for sbt 1.0
+
+sbt-unidoc is cross published to both sbt 0.13 and sbt 1.x.
+
+This was contributed by @liff in #38. To verify the PR, @xuwei-k contributed tests in #40 and #42.
