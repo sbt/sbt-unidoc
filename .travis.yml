@@ -11,9 +11,9 @@ matrix:
     jdk: openjdk7
     scala: 2.10.6
 
-  - env: SBT_VERSION="1.0.0-RC3"
+  - env: SBT_VERSION="1.0.1"
     jdk: oraclejdk8
-    scala: 2.12.2
+    scala: 2.12.3
 
 cache:
   directories:
