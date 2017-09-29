@@ -17,7 +17,7 @@ how to unify scaladoc
 
 1. Enable `ScalaUnidocPlugin` in your root project's settings.
 
-Note: If one of your subprojects is defining def macros, add `scalacOptions in (ScalaUnidoc, unidoc) += "-Ymacro-no-expand"` to the root project's setting to temporary halt the macro expansion.
+Note: If one of your subprojects is defining def macros, add `scalacOptions in (ScalaUnidoc, unidoc) += "-Ymacro-expand:none"` to the root project's setting to temporary halt the macro expansion.
 
 Here's an example setup using multi-project build.sbt:
 
