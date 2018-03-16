@@ -1,0 +1,5 @@
+> unidoc
+
+$ exists target/scala-2.12/unidoc/crossproject/index.html
+$ exists target/scala-2.12/unidoc/crossproject/Logger.html
+$ exists target/scala-2.12/unidoc/crossproject/LoggerImpl.html
