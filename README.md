@@ -9,7 +9,7 @@ how to add this plugin
 For sbt 0.13 and sbt 1.x add the following to your `project/unidoc.sbt`:
 
 ```scala
-addSbtPlugin("com.eed3si9n" % "sbt-unidoc" % "0.4.1")
+addSbtPlugin("com.eed3si9n" % "sbt-unidoc" % "0.4.2")
 ```
 
 how to unify scaladoc
@@ -105,9 +105,9 @@ how to publish Scala unidoc to Github Pages
 Add sbt-site and sbt-ghpages to your `project/site.sbt`:
 
 ```scala
-addSbtPlugin("com.typesafe.sbt" % "sbt-site" % "1.2.0")
+addSbtPlugin("com.typesafe.sbt" % "sbt-site" % "1.3.2")
 
-addSbtPlugin("com.typesafe.sbt" % "sbt-ghpages" % "0.6.0")
+addSbtPlugin("com.typesafe.sbt" % "sbt-ghpages" % "0.6.2")
 ```
 
 Then in `build.sbt` import `GitKeys`,
