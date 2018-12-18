@@ -7,13 +7,13 @@ script:
 
 matrix:
   include:
-  - env: SBT_VERSION="0.13.17"
+  - env: SBT_VERSION="0.13.18"
     jdk: openjdk7
     scala: 2.10.7
 
-  - env: SBT_VERSION="1.1.6"
+  - env: SBT_VERSION="1.2.7"
     jdk: oraclejdk8
-    scala: 2.12.6
+    scala: 2.12.8
 
 cache:
   directories:
