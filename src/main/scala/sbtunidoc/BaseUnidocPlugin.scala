@@ -24,10 +24,10 @@ object BaseUnidocPlugin extends AutoPlugin {
       (scalacOptions in unidoc).value, (javacOptions in unidoc).value, (apiMappings in unidoc).value, (maxErrors in unidoc).value,
       (target in unidoc).value, configuration.value, streams.value, (sourcePositionMappers in unidoc).value),
     compilers in unidoc := (compilers in sc).value,
-    sources in unidoc := (unidocAllSources in unidoc).value.flatten,
+    sources in unidoc := (unidocAllSources in unidoc).value.flatten.sortBy { _.getAbsolutePath },
     scalacOptions in unidoc := (scalacOptions in (sc, doc)).value,
     javacOptions in unidoc := (javacOptions in (sc, doc)).value,
-    fullClasspath in unidoc := (unidocAllClasspaths in unidoc).value.flatten.distinct,
+    fullClasspath in unidoc := (unidocAllClasspaths in unidoc).value.flatten.distinct.sortBy { _.data.getName },
     unidocAllClasspaths in unidoc := allClasspathsTask.value,
     apiMappings in unidoc := {
       val all = (unidocAllAPIMappings in unidoc).value
