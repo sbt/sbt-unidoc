@@ -1,10 +1,8 @@
 lazy val commonSettings = Seq(
-  git.baseVersion in ThisBuild := "0.4.1-SNAPSHOT",
   organization in ThisBuild := "com.eed3si9n"
 )
 
 lazy val root = (project in file(".")).
-  enablePlugins(GitVersioning).
   settings(commonSettings: _*).
   settings(
     sbtPlugin := true,
@@ -16,5 +14,11 @@ lazy val root = (project in file(".")).
     publishArtifact in (Compile, packageBin) := true,
     publishArtifact in (Test, packageBin) := false,
     publishArtifact in (Compile, packageDoc) := false,
-    publishArtifact in (Compile, packageSrc) := true
+    publishArtifact in (Compile, packageSrc) := true,
+    publishMavenStyle := false,
+    bintrayOrganization := Some("sbt"),
+    bintrayRepository := "sbt-plugin-releases",
+    scriptedSettings,
+    scriptedLaunchOpts ++= Seq("-Xmx1024M", "-XX:MaxPermSize=256M", "-Dplugin.version=" + version.value),
+    scriptedBufferLog := false
   )
