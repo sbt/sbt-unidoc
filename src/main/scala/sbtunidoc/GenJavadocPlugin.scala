@@ -10,7 +10,7 @@ object GenJavadocPlugin extends AutoPlugin {
   }
   import autoImport._
 
-  override def globalSettings = unidocGenjavadocVersion := "0.13"
+  override def globalSettings = unidocGenjavadocVersion := "0.15"
 
   override def requires = JvmPlugin
 
