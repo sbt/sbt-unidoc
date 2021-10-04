@@ -13,45 +13,40 @@ object BaseUnidocPlugin extends AutoPlugin {
   import autoImport._
 
   override def projectSettings = Seq(
-    unidoc in Compile := Seq.empty,
-    unidoc in Test := Seq.empty
+    Compile / unidoc := Seq.empty,
+    Test / unidoc := Seq.empty
   )
 
   override def requires = JvmPlugin
 
   def baseUnidocSettings(sc: Configuration): Seq[sbt.Def.Setting[_]] = Seq(
-    doc := Unidoc(streams.value.cacheDirectory, (compilers in unidoc).value, (sources in unidoc).value, (fullClasspath in unidoc).value,
-      (scalacOptions in unidoc).value, (javacOptions in unidoc).value, (apiMappings in unidoc).value, (maxErrors in unidoc).value,
-      (target in unidoc).value, configuration.value, streams.value, (sourcePositionMappers in unidoc).value),
-    compilers in unidoc := (compilers in sc).value,
-    sources in unidoc := (unidocAllSources in unidoc).value.flatten.sortBy { _.getAbsolutePath },
-    scalacOptions in unidoc := (scalacOptions in (sc, doc)).value,
-    javacOptions in unidoc := (javacOptions in (sc, doc)).value,
-    fullClasspath in unidoc := (unidocAllClasspaths in unidoc).value.flatten.distinct.sortBy { _.data.getName },
-    unidocAllClasspaths in unidoc := allClasspathsTask.value,
-    apiMappings in unidoc := {
-      val all = (unidocAllAPIMappings in unidoc).value
+    doc := Unidoc(streams.value.cacheDirectory, (unidoc / compilers).value, (unidoc / sources).value, (unidoc / fullClasspath).value,
+      (unidoc / scalacOptions).value, (unidoc / javacOptions).value, (unidoc / apiMappings).value, (unidoc / maxErrors).value,
+      (unidoc / target).value, configuration.value, streams.value, (unidoc / sourcePositionMappers).value, fileConverter.value),
+    unidoc / compilers := (sc / compilers).value,
+    unidoc / sources := (unidoc / unidocAllSources).value.flatten.sortBy { _.getAbsolutePath },
+    unidoc / scalacOptions := (sc / doc / scalacOptions).value,
+    unidoc / javacOptions := (sc / doc / javacOptions).value,
+    unidoc / fullClasspath := (unidoc / unidocAllClasspaths).value.flatten.distinct.sortBy { _.data.getName },
+    unidoc / unidocAllClasspaths := allClasspathsTask.value,
+    unidoc / apiMappings := {
+      val all = (unidoc / unidocAllAPIMappings).value
       val allList = all map { _.toList }
       allList.flatten.distinct.toMap
     },
-    unidocAllAPIMappings in unidoc := allAPIMappingsTask.value,
-    maxErrors in unidoc := (maxErrors in (sc, doc)).value,
-    unidocScopeFilter in unidoc := ScopeFilter((unidocProjectFilter in unidoc).value, (unidocConfigurationFilter in unidoc).value),
-    unidocProjectFilter in unidoc := inAnyProject,
-    // {
-    //   val exclude = excludedProjects.value
-    //   inAnyProject -- inProjects(buildStructure.value.allProjectRefs filter { p => exclude contains (p.project) }: _*)
-    // },
-    // excludedProjects in unidoc := Seq(),
-    unidocConfigurationFilter in unidoc := inConfigurations(sc)
+    unidoc / unidocAllAPIMappings := allAPIMappingsTask.value,
+    unidoc / maxErrors := (sc / doc / maxErrors).value,
+    unidoc / unidocScopeFilter := ScopeFilter((unidoc / unidocProjectFilter).value, (unidoc / unidocConfigurationFilter).value),
+    unidoc / unidocProjectFilter := inAnyProject,
+    unidoc / unidocConfigurationFilter := inConfigurations(sc)
   )
 
   lazy val allClasspathsTask = Def.taskDyn {
-    val f = (unidocScopeFilter in unidoc).value
+    val f = (unidoc / unidocScopeFilter).value
     dependencyClasspath.all(f)
   }
   lazy val allAPIMappingsTask = Def.taskDyn {
-    val f = (unidocScopeFilter in unidoc).value
-    (apiMappings in (Compile, doc)).all(f)
+    val f = (unidoc / unidocScopeFilter).value
+    (Compile / doc / apiMappings).all(f)
   }
 }
