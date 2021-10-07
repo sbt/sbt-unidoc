@@ -18,21 +18,21 @@ object ScalaUnidocPlugin extends AutoPlugin {
     scalaUnidocTask(ScalaUnidoc, Compile) ++
     scalaUnidocTask(TestScalaUnidoc, Test) ++
     inConfig(TestScalaUnidoc)(Seq(
-      target in unidoc := crossTarget.value / "testunidoc"
+      unidoc / target := crossTarget.value / "testunidoc"
     ))
 
   def scalaUnidocTask(c: Configuration, sc: Configuration): Seq[sbt.Def.Setting[_]] =
     inConfig(c)(Defaults.configSettings ++ baseScalaUnidocTasks(sc)) ++ Seq(
-      unidoc in sc ++= Seq((doc in c).value)
+      sc / unidoc ++= Seq((c / doc).value)
     )
 
   def baseScalaUnidocTasks(sc: Configuration): Seq[sbt.Def.Setting[_]] = BaseUnidocPlugin.baseUnidocSettings(sc) ++ Seq(
-    target in unidoc := crossTarget.value / "unidoc",
-    unidocAllSources in unidoc := allScalaSources.value
+    unidoc / target := crossTarget.value / "unidoc",
+    unidoc / unidocAllSources := allScalaSources.value
   )
 
   lazy val allScalaSources = Def.taskDyn {
-    val f = (unidocScopeFilter in unidoc).value
+    val f = (unidoc / unidocScopeFilter).value
     sources.all(f)
   }
 }

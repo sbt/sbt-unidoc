@@ -2,10 +2,10 @@ package sbtunidoc
 
 import sbt._
 import sbt.Keys._
-import sbt.internal.inc.{ AnalyzingCompiler, ManagedLoggedReporter }
+import sbt.internal.inc.{AnalyzingCompiler, ManagedLoggedReporter}
 import sbt.internal.util.Attributed.data
-import xsbti.compile.{ Compilers, IncToolOptionsUtil }
-import xsbti.Reporter
+import xsbti.compile.{Compilers, IncToolOptionsUtil}
+import xsbti.{FileConverter, Reporter}
 
 object Unidoc {
   import java.io.PrintWriter
@@ -13,7 +13,7 @@ object Unidoc {
   // This is straight out of docTaskSettings in Defaults.scala.
   def apply(cache: File, cs: Compilers, srcs: Seq[File], cp: Classpath,
             sOpts: Seq[String], jOpts: Seq[String], xapis: Map[File, URL], maxErrors: Int,
-            out: File, config: Configuration, s: TaskStreams, spm: Seq[xsbti.Position => Option[xsbti.Position]]): File = {
+            out: File, config: Configuration, s: TaskStreams, spm: Seq[xsbti.Position => Option[xsbti.Position]], converter: FileConverter): File = {
     val hasScala = srcs.exists(_.name.endsWith(".scala"))
     val hasJava = srcs.exists(_.name.endsWith(".java"))
     val label = nameForSrc(config.name)
@@ -31,9 +31,11 @@ object Unidoc {
       case (_, true) =>
         val javadoc =
           sbt.inc.Doc.cachedJavadoc(label, s.cacheStoreFactory sub "java", cs.javaTools)
-        javadoc.run(srcs.toList,
-          data(cp).toList,
-          out,
+        javadoc.run(
+          srcs.toList.map(f => converter.toVirtualFile(f.toPath)),
+          data(cp).toList.map(f => converter.toVirtualFile(f.toPath)),
+          converter,
+          out.toPath,
           jOpts.toList,
           IncToolOptionsUtil.defaultIncToolOptions(),
           s.log,

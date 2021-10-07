@@ -22,17 +22,17 @@ object JavaUnidocPlugin extends AutoPlugin {
     javaUnidocTask(JavaUnidoc, Compile) ++
     javaUnidocTask(TestJavaUnidoc, Test) ++
     inConfig(TestJavaUnidoc)(Seq(
-      target in unidoc := target.value / "testjavaunidoc"
+      unidoc/ target := target.value / "testjavaunidoc"
     ))
 
   def javaUnidocTask(c: Configuration, sc: Configuration): Seq[sbt.Def.Setting[_]] =
     inConfig(c)(Defaults.configSettings ++ baseJavaUnidocTasks(sc)) ++ Seq(
-      unidoc in sc ++= Seq((doc in c).value)
+      sc / unidoc ++= Seq((c / doc).value)
     )
 
   def baseJavaUnidocTasks(sc: Configuration): Seq[sbt.Def.Setting[_]] = BaseUnidocPlugin.baseUnidocSettings(sc) ++ Seq(
-    target in unidoc := target.value / "javaunidoc",
-    unidocAllSources in unidoc := allJavaSourcesTask.value
+    unidoc / target := target.value / "javaunidoc",
+    unidoc / unidocAllSources := allJavaSourcesTask.value
   )
 
   lazy val javaSources: sbt.Def.Initialize[Task[Seq[File]]] = Def.task {
@@ -43,7 +43,7 @@ object JavaUnidocPlugin extends AutoPlugin {
   }
 
   lazy val allJavaSourcesTask = Def.taskDyn {
-    val f = (unidocScopeFilter in unidoc).value
+    val f = (unidoc / unidocScopeFilter).value
     javaSources.all(f)
   }
 }
