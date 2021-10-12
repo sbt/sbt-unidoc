@@ -32,7 +32,11 @@ object ScalaUnidocPlugin extends AutoPlugin {
   )
 
   lazy val allScalaSources = Def.taskDyn {
-    val f = (unidoc / unidocScopeFilter).value
-    sources.all(f)
+    val f = (unidocScopeFilter in unidoc).value
+    if(ScalaArtifacts.isScala3(scalaVersion.value)) {
+      tastyFiles.all(f) // Since Scaladoc 3 works on TASTy files
+    } else {
+      sources.all(f)
+    }
   }
 }

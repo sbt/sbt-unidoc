@@ -14,7 +14,9 @@ object Unidoc {
   def apply(cache: File, cs: Compilers, srcs: Seq[File], cp: Classpath,
             sOpts: Seq[String], jOpts: Seq[String], xapis: Map[File, URL], maxErrors: Int,
             out: File, config: Configuration, s: TaskStreams, spm: Seq[xsbti.Position => Option[xsbti.Position]], converter: FileConverter): File = {
-    val hasScala = srcs.exists(_.name.endsWith(".scala"))
+    val hasScala = srcs.exists(_.name.endsWith(".scala")) ||
+      srcs.exists(_.name.endsWith(".tasty")) || // Condition for Scaladoc 3
+      sOpts.contains("-siteroot") // Condition for Scaladoc 3
     val hasJava = srcs.exists(_.name.endsWith(".java"))
     val label = nameForSrc(config.name)
     val reporter = new ManagedLoggedReporter(
