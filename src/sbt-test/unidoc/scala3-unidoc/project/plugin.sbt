@@ -1,1 +1,1 @@
-addSbtPlugin("com.eed3si9n" % "sbt-unidoc" % System.getProperty("plugin.version"))
+addSbtPlugin("com.github.sbt" % "sbt-unidoc" % System.getProperty("plugin.version"))
