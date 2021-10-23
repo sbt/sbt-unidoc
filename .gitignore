@@ -3,3 +3,8 @@
 .settings/
 /project/project/
 target
+.bsp/
+.DS_Store
+.idea/
+.metals/
+.vscode/
