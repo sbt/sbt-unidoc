@@ -6,7 +6,15 @@ sbt plugin to unify scaladoc/javadoc across multiple projects.
 how to add this plugin
 ----------------------
 
-For sbt 0.13 and sbt 1.x add the following to your `project/unidoc.sbt`:
+For sbt 1.x (requires sbt 1.5.x and above) add the following to your `project/plugins.sbt`:
+
+```scala
+addSbtPlugin("com.github.sbt" % "sbt-unidoc" % "0.5.0")
+```
+
+**Note**: We changed the organization from `"com.eed3si9n"` to `"com.github.sbt"`.
+
+For older sbt 1.x and sbt 0.13 add the following to your `project/plugins.sbt`:
 
 ```scala
 addSbtPlugin("com.eed3si9n" % "sbt-unidoc" % "0.4.3")
@@ -22,33 +30,28 @@ Note: If one of your subprojects is defining def macros, add `scalacOptions in (
 Here's an example setup using multi-project build.sbt:
 
 ```scala
-val commonSettings = Seq(
-    organization := "com.example",
-    version := "0.1-SNAPSHOT",
-    scalaVersion := "2.10.3",
-    autoAPIMappings := true
-  )
+ThisBuild / organization := "com.example"
+ThisBuild / version := "0.1-SNAPSHOT"
+ThisBuild / scalaVersion := scalaVersion := "2.12.15"
+ThisBuild / autoAPIMappings := true
 
-val library = (project in file("library")).
-  settings(commonSettings: _*).
-  settings(
+val library = (project in file("library"))
+  .settings(
     name := "foo-library"
   )
 
-val app = (project in file("app")).
-  settings(commonSettings: _*).
-  settings(
+val app = (project in file("app"))
+  .dependsOn(library)
+  .settings(
     name := "foo-app"
-  ).
-  dependsOn(library)
+  )
 
-val root = (project in file(".")).
-  settings(commonSettings: _*).
-  enablePlugins(ScalaUnidocPlugin).
-  settings(
+val root = (project in file("."))
+  .enablePlugins(ScalaUnidocPlugin)
+  .aggregate(library, app)
+  .settings(
     name := "foo"
-  ).
-  aggregate(library, app)
+  )
 ```
 
 From the root project, run `unidoc` task:
@@ -69,14 +72,13 @@ how to exclude a project
 1. Construct `unidocProjectFilter in (ScalaUnidoc, unidoc)` in the root project's settings.
 
 ```scala
-val root = (project in file(".")).
-  settings(commonSettings: _*).
-  enablePlugins(ScalaUnidocPlugin).
-  settings(
+val root = (project in file("."))
+  .enablePlugins(ScalaUnidocPlugin)
+  .aggregate(library, app)
+  .settings(
     name := "foo",
-    unidocProjectFilter in (ScalaUnidoc, unidoc) := inAnyProject -- inProjects(app)
-  ).
-  aggregate(library, app)
+    ScalaUnidoc / unidoc / unidocProjectFilter := inAnyProject -- inProjects(app)
+  )
 ```
 
 This will skip Scaladoc for the app project.
@@ -87,14 +89,13 @@ how to include multiple configurations
 1. Construct `unidocConfigurationFilter in (ScalaUnidoc, unidoc)` in the root project's settings.
 
 ```scala
-val root = (project in file(".")).
-  settings(commonSettings: _*).
-  enablePlugins(ScalaUnidocPlugin).
-  settings(
+val root = (project in file("."))
+  .enablePlugins(ScalaUnidocPlugin)
+  .aggregate(library, app)
+  .settings(
     name := "foo",
-    unidocConfigurationFilter in (TestScalaUnidoc, unidoc) := inConfigurations(Compile, Test)
-  ).
-  aggregate(library, app)
+    TestScalaUnidoc / unidoc / unidocConfigurationFilter := inConfigurations(Compile, Test)
+  )
 ```
 
 Running `test:unidoc` will now create unidoc including both `Compile` and `Test` configuration.
@@ -116,19 +117,18 @@ Then in `build.sbt` import `GitKeys`,
 import com.typesafe.sbt.SbtGit.GitKeys._
 ```
 
-Add `mappings in packageDoc in ScalaUnidoc` to the site's mapping:
+Add `ScalaUnidoc / packageDoc / mappings` to the site's mapping:
 
 ```scala
-val root = (project in file(".")).
-  settings(commonSettings: _*).
-  enablePlugins(ScalaUnidocPlugin, GhpagesPlugin).
-  settings(
+val root = (project in file("."))
+  .enablePlugins(ScalaUnidocPlugin, GhpagesPlugin)
+  .aggregate(library, app)
+  .settings(
     name := "foo",
-    siteSubdirName in ScalaUnidoc := "latest/api",
-    addMappingsToSiteDir(mappings in (ScalaUnidoc, packageDoc), siteSubdirName in ScalaUnidoc),
+    ScalaUnidoc / siteSubdirName := "latest/api",
+    addMappingsToSiteDir(ScalaUnidoc / packageDoc / mappings, ScalaUnidoc / siteSubdirName),
     gitRemoteRepo := "git@github.com:user/foo.git"
-  ).
-  aggregate(library, app)
+  )
 ```
 
 Here's how to preview and publish it:
@@ -145,35 +145,30 @@ how to unify javadoc
 2. Enable `JavaUnidocPlugin` in the root project.
 
 ```scala
-val commonSettings = Seq(
-    organization := "com.example",
-    version := "0.1-SNAPSHOT",
-    scalaVersion := "2.10.3",
-    autoAPIMappings := true
-)
+ThisBuild / organization := "com.example"
+ThisBuild / version := "0.1-SNAPSHOT"
+ThisBuild / scalaVersion := scalaVersion := "2.12.15"
+ThisBuild / autoAPIMappings := true
 
-val library = (project in file("library")).
-  settings(commonSettings: _*).
-  enablePlugins(GenJavadocPlugin).
-  settings(
+val library = (project in file("library"))
+  .enablePlugins(GenJavadocPlugin)
+  .settings(
     name := "foo-library"
   )
 
-val app = (project in file("app")).
-  settings(commonSettings: _*).
-  enablePlugins(GenJavadocPlugin).
-  settings(
+val app = (project in file("app"))
+  .enablePlugins(GenJavadocPlugin)
+  .dependsOn(library)
+  .settings(
     name := "foo-app"
-  ).
-  dependsOn(library)
+  )
 
-val root = (project in file(".")).
-  settings(commonSettings: _*).
-  enablePlugins(JavaUnidocPlugin).
-  settings(
+val root = (project in file("."))
+  .enablePlugins(JavaUnidocPlugin)
+  .aggregate(library, app)
+  .settings(
     name := "foo"
-  ).
-  aggregate(library, app)
+  )
 ```
 
 `GenJavadocPlugin` adds a compiler plugin called [genjavadoc][genjavadoc], which generates Java source code into `target/java` from Scala source code, so javadoc can be generated. The main benefits of javadoc are having natural documentation for Java API, IDE support, and Java enum support. However, the genjavadoc does not always generate compilable Java code; if you see misbehavior please open an issue with `genjavadoc`.
