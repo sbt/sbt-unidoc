@@ -69,7 +69,7 @@ A Scala unidoc is created under `crossTarget / "unidoc"` containing entities fro
 how to exclude a project
 ------------------------
 
-1. Construct `unidocProjectFilter in (ScalaUnidoc, unidoc)` in the root project's settings.
+1. Construct `ScalaUnidoc / unidoc / unidocProjectFilter` in the root project's settings.
 
 ```scala
 val root = (project in file("."))
@@ -86,7 +86,7 @@ This will skip Scaladoc for the app project.
 how to include multiple configurations
 --------------------------------------
 
-1. Construct `unidocConfigurationFilter in (ScalaUnidoc, unidoc)` in the root project's settings.
+1. Construct `ScalaUnidoc / unidoc / unidocConfigurationFilter` in the root project's settings.
 
 ```scala
 val root = (project in file("."))
@@ -195,7 +195,7 @@ how to publish genjavadoc instead of scaladoc
 
 1. Enable `PublishJavadocPlugin` in child projects.
 
-This will substitute the `packageDoc in Compile` with `packageDoc in Genjavadoc` to use the enhanced Javadoc.
+This will substitute the `Compile / packageDoc` with `Genjavadoc / packageDoc` to use the enhanced Javadoc.
 
 how to unify both Scaladoc and Javadoc
 --------------------------------------

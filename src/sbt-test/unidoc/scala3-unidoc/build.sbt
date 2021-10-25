@@ -16,7 +16,7 @@ lazy val c = project.settings(
 
 lazy val root = project.in(file(".")).settings(
   commonSettings,
-  unidocProjectFilter in (ScalaUnidoc, unidoc) := inAnyProject -- inProjects(c)
+  ScalaUnidoc / unidoc / unidocProjectFilter := inAnyProject -- inProjects(c)
 ).enablePlugins(
   ScalaUnidocPlugin
 ).aggregate(
