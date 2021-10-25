@@ -1,6 +1,6 @@
 > unidoc
 
-$ exists target/javaunidoc/allclasses-frame.html
+> check
 $ exists target/javaunidoc/example/A.html
 $ exists target/javaunidoc/example/B.html
 -$ exists target/javaunidoc/example/C.html

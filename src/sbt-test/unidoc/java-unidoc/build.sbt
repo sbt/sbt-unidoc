@@ -1,5 +1,5 @@
 val commonSettings = Seq(
-  scalaVersion := "2.11.11"
+  scalaVersion := "2.11.12"
 )
 
 def module(name: String) =
@@ -21,3 +21,11 @@ lazy val root = project.in(file(".")).settings(
 ).aggregate(
   a, b, c
 )
+
+TaskKey[Unit]("check") := {
+  if (scala.util.Properties.isJavaAtLeast("11")) {
+    assert(file("target/javaunidoc/allclasses.html").isFile)
+  } else {
+    assert(file("target/javaunidoc/allclasses-frame.html").isFile)
+  }
+}
