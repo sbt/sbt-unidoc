@@ -23,7 +23,9 @@ lazy val root = project.in(file(".")).settings(
 )
 
 TaskKey[Unit]("check") := {
-  if (scala.util.Properties.isJavaAtLeast("11")) {
+  if (scala.util.Properties.isJavaAtLeast("17")) {
+    assert(file("target/javaunidoc/allclasses-index.html").isFile)
+  } else if (scala.util.Properties.isJavaAtLeast("11")) {
     assert(file("target/javaunidoc/allclasses.html").isFile)
   } else {
     assert(file("target/javaunidoc/allclasses-frame.html").isFile)
