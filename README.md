@@ -32,7 +32,7 @@ Here's an example setup using multi-project build.sbt:
 ```scala
 ThisBuild / organization := "com.example"
 ThisBuild / version := "0.1-SNAPSHOT"
-ThisBuild / scalaVersion := scalaVersion := "2.12.15"
+ThisBuild / scalaVersion := "2.12.15"
 ThisBuild / autoAPIMappings := true
 
 val library = (project in file("library"))
