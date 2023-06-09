@@ -12,13 +12,13 @@ jobs:
     strategy:
       matrix:
         include:
-          - scala-version: '2.12.17'
+          - scala-version: '2.12.18'
             sbt-version: '1.5.5'
             java-version: 8
-          - scala-version: '2.12.17'
+          - scala-version: '2.12.18'
             sbt-version: '1.5.5'
             java-version: 11
-          - scala-version: '2.12.17'
+          - scala-version: '2.12.18'
             sbt-version: '1.5.5'
             java-version: 17
 
