@@ -52,10 +52,10 @@ object Unidoc {
   private[this] def exported(s: TaskStreams, command: String): Seq[String] => Unit = args =>
     exported(s.text("export"), command)
   private[this] def foldMappers[A](mappers: Seq[A => Option[A]]) =
-    mappers.foldRight({ p: A =>
+    mappers.foldRight({ (p: A) =>
       p
     }) { (mapper, mappers) =>
-      { p: A =>
+      { (p: A) =>
         mapper(p).getOrElse(mappers(p))
       }
     }
