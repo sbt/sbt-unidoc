@@ -12,7 +12,7 @@ lazy val root = (project in file("."))
     scriptedLaunchOpts ++= Seq("-Xmx1024M", "-Dplugin.version=" + version.value),
     scriptedBufferLog := false,
     // sbt-unidoc requires sbt 1.5.0 and up
-    pluginCrossBuild / sbtVersion := "1.5.0",
+    pluginCrossBuild / sbtVersion := "1.5.8",
   )
 
 Global / onChangedBuildSource := ReloadOnSourceChanges
