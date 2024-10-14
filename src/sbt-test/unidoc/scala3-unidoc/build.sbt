@@ -1,5 +1,5 @@
 val commonSettings = Seq(
-  scalaVersion := "3.0.2"
+  scalaVersion := "3.3.4"
 )
 
 lazy val a = project.settings(
