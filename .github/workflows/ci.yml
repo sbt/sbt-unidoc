@@ -30,6 +30,7 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: ${{ matrix.java-version }}
+      - uses: sbt/setup-sbt@v1
       - name: Test
         env:
           SCALA_VERSION: ${{ matrix.scala-version }}
