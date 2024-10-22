@@ -38,7 +38,7 @@ object JavaUnidocPlugin extends AutoPlugin {
   lazy val javaSources: sbt.Def.Initialize[Task[Seq[File]]] = Def.task {
     val compiled = compile.value
     val sourceJavaFiles = sources.value filter {_.getName endsWith ".java"}
-    val targetJavaFiles: Seq[File] = (target.value / "java" ** "*.java").get.sorted
+    val targetJavaFiles: Seq[File] = (target.value / "java" ** "*.java").get().sorted
     sourceJavaFiles ++ targetJavaFiles
   }
 

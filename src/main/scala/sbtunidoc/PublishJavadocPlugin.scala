@@ -18,7 +18,7 @@ object PublishJavadocPlugin extends AutoPlugin {
     packageDoc / artifactName := { (sv, mod, art) => "" + mod.name + "_" + sv.binary + "-" + mod.revision + "-javadoc.jar" },
     sources := {
       (sc / compile).value
-      (target.value / "java" ** "*.java").get ++ (sc / sources).value.filter(_.getName.endsWith(".java"))
+      (target.value / "java" ** "*.java").get() ++ (sc / sources).value.filter(_.getName.endsWith(".java"))
     },
     doc / javacOptions := (sc / doc / javacOptions).value
   )
