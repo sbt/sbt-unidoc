@@ -19,7 +19,7 @@ object BaseUnidocPlugin extends AutoPlugin {
 
   override def requires = JvmPlugin
 
-  def baseUnidocSettings(sc: Configuration): Seq[sbt.Def.Setting[_]] = Seq(
+  def baseUnidocSettings(sc: Configuration): Seq[sbt.Def.Setting[?]] = Seq(
     doc := Unidoc(streams.value.cacheDirectory, (unidoc / compilers).value, (unidoc / sources).value, (unidoc / fullClasspath).value,
       (unidoc / scalacOptions).value, (unidoc / javacOptions).value, (unidoc / apiMappings).value, (unidoc / maxErrors).value,
       (unidoc / target).value, configuration.value, streams.value, (unidoc / sourcePositionMappers).value, fileConverter.value),
