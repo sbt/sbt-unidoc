@@ -25,12 +25,12 @@ object JavaUnidocPlugin extends AutoPlugin {
       unidoc/ target := target.value / "testjavaunidoc"
     ))
 
-  def javaUnidocTask(c: Configuration, sc: Configuration): Seq[sbt.Def.Setting[_]] =
+  def javaUnidocTask(c: Configuration, sc: Configuration): Seq[sbt.Def.Setting[?]] =
     inConfig(c)(Defaults.configSettings ++ baseJavaUnidocTasks(sc)) ++ Seq(
       sc / unidoc ++= Seq((c / doc).value)
     )
 
-  def baseJavaUnidocTasks(sc: Configuration): Seq[sbt.Def.Setting[_]] = BaseUnidocPlugin.baseUnidocSettings(sc) ++ Seq(
+  def baseJavaUnidocTasks(sc: Configuration): Seq[sbt.Def.Setting[?]] = BaseUnidocPlugin.baseUnidocSettings(sc) ++ Seq(
     unidoc / target := target.value / "javaunidoc",
     unidoc / unidocAllSources := allJavaSourcesTask.value
   )

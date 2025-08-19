@@ -9,12 +9,12 @@ object PublishJavadocPlugin extends AutoPlugin {
 
   override def projectSettings = genjavadocExtraTask(GenJavadocPlugin.autoImport.Genjavadoc, Compile)
 
-  def genjavadocExtraTask(c: Configuration, sc: Configuration): Seq[sbt.Def.Setting[_]] =
+  def genjavadocExtraTask(c: Configuration, sc: Configuration): Seq[sbt.Def.Setting[?]] =
     inConfig(c)(Defaults.configSettings ++ baseGenjavadocExtraTasks(sc)) ++ Seq(
       sc / packageDoc := (c / packageDoc).value
     )
 
-  def baseGenjavadocExtraTasks(sc: Configuration): Seq[sbt.Def.Setting[_]] = Seq(
+  def baseGenjavadocExtraTasks(sc: Configuration): Seq[sbt.Def.Setting[?]] = Seq(
     packageDoc / artifactName := { (sv, mod, art) => "" + mod.name + "_" + sv.binary + "-" + mod.revision + "-javadoc.jar" },
     sources := {
       (sc / compile).value
