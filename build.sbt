@@ -39,3 +39,10 @@ ThisBuild / publishTo := {
 }
 ThisBuild / publishMavenStyle := true
 ThisBuild / dynverSonatypeSnapshots := true
+scalacOptions ++= {
+  // https://github.com/sbt/sbt/issues/8220
+  if (scalaBinaryVersion.value == "2.12")
+    Seq("-Wconf:cat=unused-nowarn:s")
+  else
+    Nil
+}

@@ -35,4 +35,4 @@ jobs:
         env:
           SCALA_VERSION: ${{ matrix.scala-version }}
           SBT_VERSION: ${{ matrix.sbt-version }}
-        run: sbt "++${SCALA_VERSION}" "^^${SBT_VERSION}" test scripted
+        run: sbt "++${SCALA_VERSION} ; ^^${SBT_VERSION} ; test ; scripted"
