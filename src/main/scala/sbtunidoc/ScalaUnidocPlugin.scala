@@ -1,8 +1,9 @@
 package sbtunidoc
 
-import sbt._
-import Keys._
-import BaseUnidocPlugin.autoImport._
+import sbt.*
+import Keys.*
+import BaseUnidocPlugin.autoImport.*
+import PluginCompat.*
 
 /** Generates unified scaladoc documentation. */
 object ScalaUnidocPlugin extends AutoPlugin {
@@ -12,7 +13,7 @@ object ScalaUnidocPlugin extends AutoPlugin {
     lazy val ScalaUnidoc = config("scalaunidoc") extend Compile
     lazy val TestScalaUnidoc = config("testscalaunidoc") extend Test
   }
-  import autoImport._
+  import autoImport.*
 
   override def projectSettings =
     scalaUnidocTask(ScalaUnidoc, Compile) ++
@@ -23,12 +24,12 @@ object ScalaUnidocPlugin extends AutoPlugin {
 
   def scalaUnidocTask(c: Configuration, sc: Configuration): Seq[sbt.Def.Setting[?]] =
     inConfig(c)(Defaults.configSettings ++ baseScalaUnidocTasks(sc)) ++ Seq(
-      sc / unidoc ++= Seq((c / doc).value)
+      sc / unidoc ++= Def.uncached(Seq((c / doc).value))
     )
 
   def baseScalaUnidocTasks(sc: Configuration): Seq[sbt.Def.Setting[?]] = BaseUnidocPlugin.baseUnidocSettings(sc) ++ Seq(
     unidoc / target := crossTarget.value / "unidoc",
-    unidoc / unidocAllSources := allScalaSources.value
+    unidoc / unidocAllSources := Def.uncached(allScalaSources.value)
   )
 
   lazy val allScalaSources = Def.taskDyn {

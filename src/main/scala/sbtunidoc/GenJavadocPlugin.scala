@@ -1,8 +1,9 @@
 package sbtunidoc
 
-import sbt._
-import sbt.Keys._
+import sbt.*
+import sbt.Keys.*
 import sbt.plugins.JvmPlugin
+import PluginCompat.*
 
 object GenJavadocPlugin extends AutoPlugin {
   object autoImport extends GenJavadocKeys {
@@ -16,5 +17,6 @@ object GenJavadocPlugin extends AutoPlugin {
 
   override def projectSettings = Seq(
     libraryDependencies += compilerPlugin("com.typesafe.genjavadoc" %% "genjavadoc-plugin" % unidocGenjavadocVersion.value cross CrossVersion.full),
-    scalacOptions += ("-P:genjavadoc:out=" + (target.value / "java")))
+    scalacOptions += Def.uncached(("-P:genjavadoc:out=" + (target.value / "java"))),
+  )
 }

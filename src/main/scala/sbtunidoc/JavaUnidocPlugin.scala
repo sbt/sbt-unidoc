@@ -1,8 +1,9 @@
 package sbtunidoc
 
-import sbt._
-import Keys._
-import BaseUnidocPlugin.autoImport._
+import sbt.*
+import Keys.*
+import BaseUnidocPlugin.autoImport.*
+import PluginCompat.*
 
 /** Generates unified javadoc documentation.
   *
@@ -27,12 +28,12 @@ object JavaUnidocPlugin extends AutoPlugin {
 
   def javaUnidocTask(c: Configuration, sc: Configuration): Seq[sbt.Def.Setting[?]] =
     inConfig(c)(Defaults.configSettings ++ baseJavaUnidocTasks(sc)) ++ Seq(
-      sc / unidoc ++= Seq((c / doc).value)
+      sc / unidoc ++= Def.uncached(Seq((c / doc).value))
     )
 
   def baseJavaUnidocTasks(sc: Configuration): Seq[sbt.Def.Setting[?]] = BaseUnidocPlugin.baseUnidocSettings(sc) ++ Seq(
     unidoc / target := target.value / "javaunidoc",
-    unidoc / unidocAllSources := allJavaSourcesTask.value
+    unidoc / unidocAllSources := Def.uncached(allJavaSourcesTask.value),
   )
 
   lazy val javaSources: sbt.Def.Initialize[Task[Seq[File]]] = Def.task {
