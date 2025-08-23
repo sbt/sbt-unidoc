@@ -12,14 +12,17 @@ jobs:
     strategy:
       matrix:
         include:
-          - scala-version: '2.12.20'
-            sbt-version: '1.5.5'
+          - scala-version: '2.12.x'
             java-version: 8
-          - scala-version: '2.12.20'
-            sbt-version: '1.5.5'
+          - scala-version: '3.x'
+            java-version: 8
+          - scala-version: '2.12.x'
             java-version: 11
-          - scala-version: '2.12.20'
-            sbt-version: '1.5.5'
+          - scala-version: '3.x'
+            java-version: 11
+          - scala-version: '2.12.x'
+            java-version: 17
+          - scala-version: '3.x'
             java-version: 17
 
     steps:
@@ -35,4 +38,4 @@ jobs:
         env:
           SCALA_VERSION: ${{ matrix.scala-version }}
           SBT_VERSION: ${{ matrix.sbt-version }}
-        run: sbt "++${SCALA_VERSION} ; ^^${SBT_VERSION} ; test ; scripted"
+        run: sbt "++${SCALA_VERSION} ; test ; scripted"
