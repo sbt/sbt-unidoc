@@ -15,19 +15,20 @@ lazy val c = module("c")
 
 lazy val root = project.in(file(".")).settings(
   commonSettings,
-  JavaUnidoc / unidoc / unidocProjectFilter := inAnyProject -- inProjects(c)
+  name := "javaunidoc",
+  JavaUnidoc / unidoc / unidocProjectFilter := inAnyProject -- inProjects(c),
+  TaskKey[Unit]("check") := {
+    if (scala.util.Properties.isJavaAtLeast("17")) {
+      assert(file("target/javaunidoc/allclasses-index.html").isFile)
+    } else if (scala.util.Properties.isJavaAtLeast("11")) {
+      assert(file("target/javaunidoc/allclasses.html").isFile)
+    } else {
+      assert(file("target/javaunidoc/allclasses-frame.html").isFile)
+    }
+  },
+  target := baseDirectory.value / "target",
 ).enablePlugins(
   JavaUnidocPlugin
 ).aggregate(
   a, b, c
 )
-
-TaskKey[Unit]("check") := {
-  if (scala.util.Properties.isJavaAtLeast("17")) {
-    assert(file("target/javaunidoc/allclasses-index.html").isFile)
-  } else if (scala.util.Properties.isJavaAtLeast("11")) {
-    assert(file("target/javaunidoc/allclasses.html").isFile)
-  } else {
-    assert(file("target/javaunidoc/allclasses-frame.html").isFile)
-  }
-}
