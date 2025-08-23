@@ -1,4 +1,7 @@
-ThisBuild / scalaVersion := "2.12.20"
+lazy val scala212 = "2.12.20"
+lazy val scala3 = "3.7.2"
+ThisBuild / crossScalaVersions := Seq(scala212, scala3)
+ThisBuild / scalaVersion := scala212
 ThisBuild / version := {
   val orig = (ThisBuild / version).value
   if (orig.endsWith("-SNAPSHOT")) "0.5.0-SNAPSHOT"
@@ -11,16 +14,26 @@ lazy val root = (project in file("."))
     name := "sbt-unidoc",
     scriptedLaunchOpts ++= Seq("-Xmx1024M", "-Dplugin.version=" + version.value),
     scriptedBufferLog := false,
-    // sbt-unidoc requires sbt 1.5.0 and up
-    pluginCrossBuild / sbtVersion := "1.5.0",
+    (pluginCrossBuild / sbtVersion) := {
+      scalaBinaryVersion.value match {
+        case "2.12" => "1.5.8"
+        case _      => "2.0.0-RC2"
+      }
+    },
+    scriptedSbt := {
+      scalaBinaryVersion.value match {
+        case "2.12" => "1.10.6"
+        case _      => (pluginCrossBuild / sbtVersion).value
+      }
+    },
   )
 
 Global / onChangedBuildSource := ReloadOnSourceChanges
 ThisBuild / description := "sbt plugin to create a unified API document across projects"
 ThisBuild / organization := "com.github.sbt"
 ThisBuild / homepage := Some(url("https://github.com/sbt/sbt-unidoc"))
-ThisBuild / Compile / scalacOptions := Seq("-feature", "-deprecation", "-Xlint")
-ThisBuild / licenses := List("Apache License v2" -> url("http://www.apache.org/licenses/LICENSE-2.0.html"))
+ThisBuild / Compile / scalacOptions ++= Seq("-feature", "-deprecation", "-Xlint")
+ThisBuild / licenses := List(License.Apache2)
 ThisBuild / developers := List(
   Developer(
     "eed3si9n",
@@ -29,17 +42,8 @@ ThisBuild / developers := List(
     url("https://github.com/eed3si9n")
   )
 )
-ThisBuild / pomIncludeRepository := { _ =>
-  false
-}
-ThisBuild / publishTo := {
-  val nexus = "https://oss.sonatype.org/"
-  if (isSnapshot.value) Some("snapshots" at nexus + "content/repositories/snapshots")
-  else Some("releases" at nexus + "service/local/staging/deploy/maven2")
-}
-ThisBuild / publishMavenStyle := true
 ThisBuild / dynverSonatypeSnapshots := true
-scalacOptions ++= {
+Compile / scalacOptions ++= {
   // https://github.com/sbt/sbt/issues/8220
   if (scalaBinaryVersion.value == "2.12")
     Seq("-Wconf:cat=unused-nowarn:s")
