@@ -37,7 +37,7 @@ object BaseUnidocPlugin extends AutoPlugin {
         (unidoc / sourcePositionMappers).value,
         fileConverter.value)
     },
-    unidoc / compilers := Def.uncached((sc / compilers).value),
+    unidoc / compilers := Def.uncached((sc / doc / compilers).value),
     unidoc / sources := Def.uncached((unidoc / unidocAllSources).value.flatten.sortBy { _.getAbsolutePath }),
     unidoc / scalacOptions := Def.uncached((sc / doc / scalacOptions).value),
     unidoc / javacOptions := Def.uncached((sc / doc / javacOptions).value),
