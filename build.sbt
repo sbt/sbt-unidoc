@@ -1,5 +1,5 @@
 lazy val scala212 = "2.12.21"
-lazy val scala3 = "3.7.4"
+lazy val scala3 = "3.8.1"
 ThisBuild / crossScalaVersions := Seq(scala212, scala3)
 ThisBuild / scalaVersion := scala212
 ThisBuild / version := {
@@ -17,7 +17,7 @@ lazy val root = (project in file("."))
     (pluginCrossBuild / sbtVersion) := {
       scalaBinaryVersion.value match {
         case "2.12" => "1.5.8"
-        case _      => "2.0.0-RC6"
+        case _      => "2.0.0-RC9"
       }
     },
     scriptedSbt := {
@@ -32,7 +32,7 @@ Global / onChangedBuildSource := ReloadOnSourceChanges
 ThisBuild / description := "sbt plugin to create a unified API document across projects"
 ThisBuild / organization := "com.github.sbt"
 ThisBuild / homepage := Some(url("https://github.com/sbt/sbt-unidoc"))
-ThisBuild / Compile / scalacOptions ++= Seq("-feature", "-deprecation", "-Xlint")
+ThisBuild / scalacOptions ++= Seq("-feature", "-deprecation", "-Xlint")
 ThisBuild / licenses := List(License.Apache2)
 ThisBuild / developers := List(
   Developer(
@@ -43,10 +43,9 @@ ThisBuild / developers := List(
   )
 )
 ThisBuild / dynverSonatypeSnapshots := true
-Compile / scalacOptions ++= {
-  // https://github.com/sbt/sbt/issues/8220
+scalacOptions ++= {
   if (scalaBinaryVersion.value == "2.12")
-    Seq("-Wconf:cat=unused-nowarn:s")
+    Seq("-release:8")
   else
     Nil
 }
