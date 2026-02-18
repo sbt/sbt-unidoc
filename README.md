@@ -9,7 +9,7 @@ how to add this plugin
 For sbt 1.x (requires sbt 1.5.x and above) add the following to your `project/plugins.sbt`:
 
 ```scala
-addSbtPlugin("com.github.sbt" % "sbt-unidoc" % "0.5.0")
+addSbtPlugin("com.github.sbt" % "sbt-unidoc" % "0.6.1")
 ```
 
 **Note**: We changed the organization from `"com.eed3si9n"` to `"com.github.sbt"`.
