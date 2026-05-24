@@ -11,8 +11,8 @@ import PluginCompat.*
   */
 object JavaUnidocPlugin extends AutoPlugin {
   object autoImport {
-    lazy val JavaUnidoc     = config("javaunidoc") extend Compile
-    lazy val TestJavaUnidoc = config("testjavaunidoc") extend Test
+    lazy val JavaUnidoc     = config("javaunidoc").extend(Compile)
+    lazy val TestJavaUnidoc = config("testjavaunidoc").extend(Test)
   }
 
   import autoImport._
@@ -38,7 +38,7 @@ object JavaUnidocPlugin extends AutoPlugin {
 
   lazy val javaSources: sbt.Def.Initialize[Task[Seq[File]]] = Def.task {
     val compiled = compile.value
-    val sourceJavaFiles = sources.value filter {_.getName endsWith ".java"}
+    val sourceJavaFiles = sources.value filter {_.getName.endsWith(".java")}
     val targetJavaFiles: Seq[File] = (target.value / "java" ** "*.java").get().sorted
     sourceJavaFiles ++ targetJavaFiles
   }

@@ -7,7 +7,7 @@ import PluginCompat.*
 
 object GenJavadocPlugin extends AutoPlugin {
   object autoImport extends GenJavadocKeys {
-    lazy val Genjavadoc = config("genjavadoc") extend Compile
+    lazy val Genjavadoc = config("genjavadoc").extend(Compile)
   }
   import autoImport._
 
@@ -16,7 +16,7 @@ object GenJavadocPlugin extends AutoPlugin {
   override def requires = JvmPlugin
 
   override def projectSettings = Seq(
-    libraryDependencies += compilerPlugin("com.typesafe.genjavadoc" %% "genjavadoc-plugin" % unidocGenjavadocVersion.value cross CrossVersion.full),
+    libraryDependencies += compilerPlugin(("com.typesafe.genjavadoc" %% "genjavadoc-plugin" % unidocGenjavadocVersion.value).cross(CrossVersion.full)),
     scalacOptions += Def.uncached(("-P:genjavadoc:out=" + (target.value / "java"))),
   )
 }
