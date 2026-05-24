@@ -10,8 +10,8 @@ object ScalaUnidocPlugin extends AutoPlugin {
   override def requires = BaseUnidocPlugin
 
   object autoImport {
-    lazy val ScalaUnidoc = config("scalaunidoc") extend Compile
-    lazy val TestScalaUnidoc = config("testscalaunidoc") extend Test
+    lazy val ScalaUnidoc = config("scalaunidoc").extend(Compile)
+    lazy val TestScalaUnidoc = config("testscalaunidoc").extend(Test)
   }
   import autoImport.*
 
