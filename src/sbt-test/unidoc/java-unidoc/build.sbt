@@ -18,15 +18,15 @@ lazy val root = project.in(file(".")).settings(
   name := "javaunidoc",
   JavaUnidoc / unidoc / unidocProjectFilter := inAnyProject -- inProjects(c),
   TaskKey[Unit]("check") := {
+    val docs = (JavaUnidoc / unidoc / target).value
     if (scala.util.Properties.isJavaAtLeast("17")) {
-      assert(file("target/javaunidoc/allclasses-index.html").isFile)
+      assert((docs / "allclasses-index.html").isFile)
     } else if (scala.util.Properties.isJavaAtLeast("11")) {
-      assert(file("target/javaunidoc/allclasses.html").isFile)
+      assert((docs / "allclasses.html").isFile)
     } else {
-      assert(file("target/javaunidoc/allclasses-frame.html").isFile)
+      assert((docs / "allclasses-frame.html").isFile)
     }
-  },
-  target := baseDirectory.value / "target",
+  }
 ).enablePlugins(
   JavaUnidocPlugin
 ).aggregate(
