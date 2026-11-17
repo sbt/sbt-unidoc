@@ -74,11 +74,11 @@ object Unidoc {
     out
   }
 
-  private[this] def exported(w: PrintWriter, command: String): Seq[String] => Unit = args =>
+  private def exported(w: PrintWriter, command: String): Seq[String] => Unit = args =>
     w.println( (command +: args).mkString(" ") )
-  private[this] def exported(s: TaskStreams, command: String): Seq[String] => Unit = args =>
+  private def exported(s: TaskStreams, command: String): Seq[String] => Unit = args =>
     exported(s.text("export"), command)
-  private[this] def foldMappers[A](mappers: Seq[A => Option[A]]) =
+  private def foldMappers[A](mappers: Seq[A => Option[A]]) =
     mappers.foldRight({ (p: A) =>
       p
     }) { (mapper, mappers) =>

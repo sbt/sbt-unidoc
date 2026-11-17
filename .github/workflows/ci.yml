@@ -20,6 +20,10 @@ jobs:
             java-version: 17
           - scala-version: '3.x'
             java-version: 17
+          - scala-version: '3.x'
+            java-version: 21
+          - scala-version: '3.x'
+            java-version: 25
 
     steps:
       - name: Checkout current branch
